@@ -1,0 +1,55 @@
+---
+title: "The Birthday Paradox"
+author: "Vassilis Markos"
+output: html_notebook
+---
+
+# The Birthday Paradox
+
+The "Paradox" goes like that:
+
+> In a room of $n$ people what is the minimum value of $n$ such that at least two people in that room share birthdays?
+
+## Some Initial Thoughts
+
+To begin with, $n=1$ is not the answer, since a single person cannot share birthday with anybody else in the room. In the same way, we should not consider values of $n$ greater than 365, assuming no leap years for a moment. So, we are left with:
+
+$$n\in\{2,3,\ldots,365\}.$$
+
+## A Simulation
+
+We can simulate a room of $n$ people as a list of $n$ numbers ranging from 1 up to 365, with each number corresponding to the day each person has been born. So, whenever we have a sample containing at least one pair of duplicates, we have two people in that room sharing birthday.
+
+Now, in order to actually estimate the corresponding probability, we just have to repeat the above many times.
+
+```{r}
+bday_simulation <- function() {
+  N <- 100
+  for (n in 2:365) {
+    hits <- 0
+    for (i in 1:N) {
+      room <- sample(1:365, n, replace = TRUE)
+      dedup <- unique(room)
+      if (length(dedup) < length(room)) {
+        # This means there are some duplicates, so some people share birthday
+        hits <- hits + 1
+      }
+    }
+    prob_same_bday = hits / N
+    if (prob_same_bday > 0.50) {
+      return(n)
+    }
+  }
+  return(366)
+}
+results <- c() # c() constructs an empty vector (column)
+for (i in 1:100) {
+  results[i] <- bday_simulation()
+}
+res_table <- table(results)
+print(res_table)
+barplot(res_table)
+```
+## For the next time...
+
+What is the actual value of $n$ using probability theory? Of course, you can use R to facilitate any computations!

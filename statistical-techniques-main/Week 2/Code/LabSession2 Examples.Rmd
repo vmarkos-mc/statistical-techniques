@@ -1,0 +1,134 @@
+---
+title: "Statistical Inference Lab Session"
+author: "Lee Barnby"
+date: "2024-10-03"
+output:
+  html_document: default
+  word_document: default
+---
+
+# Lab Session 2: Statistical Inference
+
+## Area under the Normal Distribution Curve
+
+1. Approximately 95% of the area under the normal curve lies in the interval given by \( \mu \pm 2\sigma \).
+2. For \( \mu = 0 \) and \( \sigma = 1 \) (the standard normal distribution):
+    - The upper interval limit is at the quantile 97.5.
+    - The lower interval limit is at the quantile 2.5.
+    - `qnorm(0.975)` gives 1.959964.
+    - `qnorm(0.025)` gives -1.959964.
+    - These values are approximately \( \pm 2 \).
+Insert a code block to verify this.
+
+## 99.7% of the Normal Curve's Area
+
+1. This area spans the interval \( \mu \pm 3\sigma \).
+2. Quantile limits are 0.15% and 99.85%.
+    - `qnorm(0.9985)` and `qnorm(0.0015)` give 2.967738 and -2.967738.
+    - This interval is approximately \( \pm 3 \).
+Insert a code block to verify this. Why are the values identical, apart from their sign?
+## 68% of the Normal Curve's Area
+
+1. This area covers \( \pm 1\sigma \) from the mean \( \mu \).
+Use the qnorm function to find the exact quantiles for this interval.
+
+## Test for a Data Set Being Normally Distributed
+We'll use the `trees` dataset as an example:
+ 
+```{r}
+# Load data
+data(trees)
+
+# Histograms
+hist(trees[,1])
+
+```
+Repeat this for the second and third columns. You might want to use the help function to look up what these data represent.
+```{r}
+
+# QQ plots
+qqnorm(trees[,1])
+qqline(trees[,1])
+
+# Shapiro-Wilk test
+shapiro.test(trees[,1])
+
+# Box plot
+boxplot(trees[,3])
+```
+
+## Example from Lecture
+
+A random sample of 80 tablets had an average potency of 15mg with a known standard deviation of 4mg.
+
+```{r}
+# 95% confidence interval
+qnorm(0.025, mean=15, sd=4/sqrt(80))
+qnorm(0.975, mean=15, sd=4/sqrt(80))
+```
+
+## Confidence Intervals
+
+1. 95% confidence interval for the population mean \( \mu \) is given by:
+    \[
+    \bar{x} \pm 1.96 \times \frac{\sigma}{\sqrt{n}}
+    \]
+
+2. Example: The weight of eggs sold by a grocery store is normally distributed with a standard deviation of 18 grams. A sample of 20 eggs has an average weight of 42 grams.
+
+```{r}
+# 95% confidence interval
+mean_weight <- 42
+sd_weight <- 18
+n <- 20
+error <- qnorm(0.975) * (sd_weight / sqrt(n))
+ci_lower <- mean_weight - error
+ci_upper <- mean_weight + error
+ci_lower
+ci_upper
+```
+
+# Lab Session 3: Statistical Inference with Students t-Distribution
+
+## Example from Lecture
+
+26 measurements of the potency of a single batch of tablets:
+
+```{r}
+x <- c(498.38, 489.31, 505.5, 495.24, 490.17, 483.2, 488.47, 497.71, 503.41, 482.25, 488.14, 492.22, 483.96, 473.93, 463.4, 493.65, 499.48, 496.05, 494.54, 508.58, 488.42, 463.68, 492.46, 489.45, 491.57, 489.33)
+mean(x)
+sd(x)
+```
+Can you use the 'qt()' command to find the 95% confidence interval for the mean potency of the batch?
+
+## Confidence Intervals when the Data is Normally Distributed
+
+1. 95% confidence interval for the sample mean when the variance is known:
+    \[
+    \bar{x} \pm 1.96 \times \frac{\sigma}{\sqrt{n}}
+    \]
+
+2. Example with known standard deviation:
+
+```{r}
+x2 <- c(238, 474, 359, 256, 481, 323, 151, 340, 284, 417, 424, 309, 139, 237, 269, 46, 350, 408, 223, 408, 286, 224, 238, 119, 343)
+mean(x2) + qnorm(0.975) * (sd(x2)/sqrt(25))
+mean(x2) - qnorm(0.975) * (sd(x2)/sqrt(25))
+```
+What is wrong with this calculation?
+
+## Determination of Sample Size for Estimating a Population Mean
+
+1. Example: The weight of eggs sold by a grocery store is normally distributed with a standard deviation of 8 grams. Compute the sample size needed for a 99% confidence interval with an interval width of at most 2 grams.
+
+```{r}
+sd_eggs <- 8
+z_alpha <- qnorm(0.99)
+epsilon <- 2
+n <- (z_alpha * sd_eggs / epsilon)^2
+n
+```
+
+---
+
+Documeent converted from pdf bu Co-pilot, edited and compiled by Lee Barnby on `r Sys.Date()`.
