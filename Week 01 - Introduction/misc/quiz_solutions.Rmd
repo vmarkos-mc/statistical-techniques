@@ -1,0 +1,470 @@
+---
+title: "Solutions to Introductory Quiz in Probability"
+author: "Vassilis Markos"
+output:
+  html_document:
+    df_print: paged
+  pdf_document:
+    keep_tex: true
+    fig_caption: true
+    latex_engine: pdflatex
+abstract: Solutions to last time's introductory quiz with brief comments for each
+  one. Also, do not miss the minor challenges in some of the most (or least) interesting
+  questions!
+fontfamily: bera
+---
+
+# Question 1
+
+> We toss a fair coin three times. The probability of HHH (three times "heads") is less than the probability of HTH ("heads", followed by "tails", followed by "head").
+
+**True.** This is a relatively simple question on classical probability. Simple counting works miracles here, since there is just one event where all tosses yield H, and there is also exactly one series of tossses resulting to HTH, so the two probabilities must be equal (given the fairness of the used coin).
+
+In particular, the corresponding probability is: $\frac{1}{8}$.
+
+# Question 2
+
+> We toss a fair coin three times. The probability of seeing H twice is greater than the probability of seeing H trice.
+
+**True.** Again, this boils down to simple counting. There is only one event where we have HHH (HHH itself), while there are three events where we encounter exactly two heads, namely: HHT, HTH, THH. So, since $3>1$, there are more chances to see H twice than trice.
+
+*Twist:* What if we tossed the coin 5 times? Is seeing H twice or trice the most possible outcome?
+
+# Question 3
+
+> We roll two fair dices. What is the probability of both dices bringing the same result?
+
+The correct answer is $\frac{1}{6}$ as most of you have correctly responded. The total number of combinations is $6\cdot 6=36$, while those of interest are exactly $6$ (both dices facing up the same value). So, in total, we have:
+
+$$\frac{6}{36}=\frac{1}{6}.$$
+
+# Question 4
+
+> In a multiple choice test each question has 4 possible answer, with exactly one of those being correct. A particular participant knows the correct answer in a question with probability 0.70. Then, the probability of knowing the answer having answered correctly is...
+
+The correct answer is $0.90$. The easiest way to see this is by using conditional probabilities, so, let $A$ be the event that the can answer correctly and $B$ the event that the student answers correctly. In that setting, we already know that $p(A)=0.70$ and we are interested in $p(A\mid B)$. From the Total Probability Theorem (which is no more than just partitioning the event space) we get:
+
+$$p(B)=p(B\cap A)+p(B\cap A')=p(B\mid A)p(A)+p(B\mid A')p(A').$$
+
+So, the probability of the student answering correctly in a question they do know ($B\cap A$) is $0.70$, as we already know, while the probability they answer correctly a question they do not know is $\frac{1}{4}\times 0.30=0.075$. So, in total:
+
+$$p(B)=0.70+0.075=0.775.$$
+
+Then, we have:
+
+$$p(A\mid B)=\frac{p(A\cap B)}{p(B)}=\frac{0.70}{0.775}\approx0.90.$$
+
+
+## Another line of attack...
+
+We can also answer the above by counting. The percentage of questions answered correctly will be $70\%$ plus one fourth of the other $30\%$ the student cannot answer correctly, so they answer at random. That is, the percentage of the correctly answered questions is roughly $77.5\%$, out of which the student knows the answer in $70/77.5$ questions, which is the same ratio as the one we obtained above. So, even if you were not aware of conditional probabilities and Bayes' formula, you could work things out using just... counting!
+
+
+# Question 5
+
+> We toss a fair coin 4 times. What is the probability of getting 3 times H and one time T?
+
+The correct answer is $\frac{1}{4}$. Indeed, in order to get 3 H and 1 T we have four possible combinations, depending on the position at which T appears (1st, 2nd, 3rd or 4th). So, 4 out of the $2^4=16$ possible outcomes in total, i.e.:
+
+$$\frac{4}{16}=\frac{1}{4}.$$
+
+# Question 6
+
+> We toss a "soft" coin twice. The first time, the coin behaves as a typical fair coin, while the second, if the result is H, then the probability of getting again H is 0.70, but if it is T, then the probability of getting again H is 0.40. What is the probability of getting one H and one T in those two tosses?
+
+The correct answer is $0.35$. Indeed, we have to discriminate between the two results the first toss yields. So, let $H_i,T_i$ be the events of Heads / Tails in the $i$-th toss, respectively, for $i=1,2$ and $H,T$ being the events of getting one time Heads / Tails repsectively. So, we are interested in the probability:
+
+$$p(HT)=p(H_1T_2)+p(H_2T_1).$$
+
+We can compute this in each case by taking into account the coin's softness, as follows:
+
+* In the case the first toss is H, which happens with probability $p(H_1)=0.50$, we then get T with probaiblity $p(T_2)=0.30$, so we get $p(H_1T_2)=0.50\cdot 0.30=0.15$.
+* Similarly, in case the first toss is T, with probability $p(T_1)=0.50$, then we get $H$ with probability $p(H_2)=0.40$, so $p(T_1H_2)=0.50\cdot0.40=0.20$.
+
+In total, we obtain $p(HT)=0.15+0.20=0.35$ as promised.
+
+# Question 7
+
+> The intersection of two sets A, B, corresponds to the set of all elements belonging to both A and B.
+
+**True**, by the very definition of the intersection, $A\cap B$ of two sets.
+
+# Question 8
+
+> The union of two sets A, B, corresponds to the set of all elements belonging either to A or B but not both.
+
+**True**, again by the definition of $A\cup B$. Observe that in set theory, the union always includes the intersection of the same two sets, i.e.:
+
+$$A\cap B\subseteq A\cup B$$
+
+which might contradict the common everyday use of "or" as "either... or...". Bear this in mind as you formulate problems from natural language to mathematics.
+
+# Question 9
+
+> The average height of a football team is 1.76. Selling a player of height 1.83 and buying a player of height 1.81 will...
+
+**lower the team's average height.** This is expected, since we remove a larger observation from our sample than the one we introduce. In particular, taking some time to do the math, let $S$ denote the sum of heights of the $n$ players of the team. Then, the new total height will be given by:
+
+$$S'=S-1.83+1.82=S-0.02,$$
+
+so the new average value will be:
+
+$$\mu'=\frac{S'}{n}=\frac{S-0.02}{n}=\frac{S}{n}-\frac{0.02}{n}<\frac{S}{n}=\mu.$$
+
+So, indeed, $\mu'<\mu$.
+
+# Question 10
+
+> Let X be a sample of 37 observations with mean value 23. Multiplying all sample observations by -3, the new average will be...
+
+**-69.** It is a given fact that the mean value is sensitive to linear transformations, i.e., that the mean value of $aX+b$ equals $a\mu+b$ where $\mu$ is the mean value of $X$. Hence, in our case:
+
+$$\mu'=-3\mu=-3\cdot23=-69.$$
+
+# Question 11
+
+> Students of a Probability course score on average 13 points in a 0-20 scale, with a standard deviation of 5.84. Assuming we convert all grades to a 0-100 scale, the standard corresponding mean value, $\mu$, and standard deviation, s, will be...
+
+$\mu=65,s=29.20$. As we discussed before, the mean value is sensitive to linear transformations, while standard deviation is sensitive only to scaling, i.e., if $s$ is the standard deviation of a random variable $X$, then the standard deviaation of $aX+b$ will be:
+
+$$s'=|a|s.$$
+
+*As a piece of intuition, think of the sample as a piece of dough. In this analogy, mean value corresponds to its centre of mass and standard deviation to the distribution of the dough around its centre of mass. Thus, moving the dough around naturally moves its centre of mass (mean value) but does not affect its shape (standard deviation), while if we scale the dough, then naturally its centred of mass is appropriately scaled, e.g., when the dough puffs, while this is also true for its shape, which is naturally affected by this transformation.*
+
+# Question 12
+
+> In a sample of 183 observations, we add a new value equal to the maximum observation in the sample. Which of the following statistical functions is not guaranteed to increase?
+
+The **median** is, in general, the least vulnerable to extreme observations since it captures the point in the sample which evenly splits the sample. All other measures mentioned, given that they involve, among others, both extreme observations, are naturally affected by new extreme observations. For a demonstration, consider the following sample of 7 observations:
+
+$$1,1,2,4,4,7,8.$$
+
+Then, adding another extreme value, e.g., $2027$, will result to the range, mean value and standard deviation increasing significantly (you can verify this computationally), but the median remains intact at $\delta=4$ in both samples.
+
+# Question 13
+
+> The mean value of sample is not sensitive to extreme observations.
+
+**False**, as illustrated by the previous example (see Question 12).
+
+# Question 14
+
+> We choose two balls from a bowl containing 12 black and 8 white ones without replacement. The probability of getting two balls of the same colour is...
+
+**192/380.** To see this, let us denote by $B_i,W_i$ the events of drawing a black and white ball at iteration $i=1,2$, respectively. Then, we are interested in the probability:
+
+$$p(B_1W_2\cup W_1B_2)=p(B_1W_2)+p(W_1B_2).$$
+
+Given that there is no replacement, i.e., each ball extracted is then removed from the bowl, we easily get:
+
+$$p(B_1W_2)=\frac{12}{20}\frac{8}{19}.$$
+
+Similarly:
+
+$$p(W_1B_2)=\frac{8}{20}\frac{12}{19}.$$
+
+So, in total ($BW$ denotes the event of interest, just for simplicity):
+
+$$p(BW)=\frac{12}{20}\frac{8}{19}+\frac{8}{20}\frac{12}{19}=\frac{192}{380}.$$
+
+*You might observe some symmetry between the two cases examined above. Is this a generalisable observation or is it coincidental?*
+
+# Question 15
+
+> We choose two balls from a bowl containing 12 black and 8 white ones with replacement. The probability of getting two balls of the same colour is...
+
+**192/400.** The idea is identical to the previous question, just taking into account that now that we replace balls into the bowl, all denominators are equal to 20.
+
+# Question 16
+
+> We choose two numbers (not necessarily different}, x, y, uniformly at random from the set {1,2,...,100}. Then, their sum, x + y, is uniformly distributed on the set {2,3,...,200}.
+
+**False.** This is a classic in statistics / probability related interviews, so... heads up! Even if $x,y$ are drawn from a uniform distribution, i.e., completely at random, the distribution of their sum is not uniform. To see this, observe that, e.g., $x+y=2$ can be obtained only through $x=y=1$, while for $x+y=100$ we have the following combinations:
+
+$$(x,y)\in\{(1,99),(2,98),\ldots,(99,1)\}.$$
+
+In general, the distribution of $x+y$ is what we refer to as *triangular* distribution, since the middle values can be obtained with higher probability for combinatorial reasons.
+
+# Question 17
+
+> A flu test is positive with probability 0.95 given that the patient is actually sick, and with probability 0.20 if the patient is not actually sick. In a population where about 3% of the population is sick, what is the probability that a person tests positive?
+
+**0.2225.** Let $+$ and $F$ be the events that a person tests positive and that a person is down with the flu, respectively. Then, the above data translate to:
+
+$$P(+\mid F)=0.95,\quad P(+\mid F')=0.20$$
+and:
+
+$$P(F)=0.03.$$
+Then, we are interested into computing the probability $P(+)$. We can think in terms of the Total Probability Theorem (or just, by partitioning our population into people who are sick and people who are not) as follows:
+
+$$P(+)=P(+\cap F)+P(+\cap F'),$$
+i.e., the probability for one person to test positive is the some of the probability of testing positive and being sick plus the probability of testing positive and not being sick. Given the above data, we have:
+
+$$
+\begin{aligned}
+  P(+\cap F)&=P(+\mid F)P(F)=0.95\cdot0.03=0..0285\\
+  P(+\cap F')&=P(+\mid F')P(F')=0.20\cdot0.97=0.194
+\end{aligned}
+$$
+
+So, in total:
+
+$$P(+)=0.0285+0.194=0.2225.$$
+
+# Question 18
+
+> How many anagrams of the word "grass" are there?
+
+**60.** The word anagram might be of some confusion here. To create an anagram of grass, we have out our disposal 1 'g', 1 'r', 1 'a' and 2 's' and we are allowed to order them in a any way we wish two, not distinguishing, of course, between copies of the same letter. So, we can think of an anagram as a sequence of five letters where we have:
+
+* five choices to place 'g' (any of the five empty slots);
+* four choices to place 'r' (since 'g' now occupies one of the five slots);
+* three choices to place 'a' (since 'g' and 'r' take up two slots), and;
+* one choice on where to place both 's', since we have been left with only two empty slots and we cannot distinguish between the two 's' characters.
+
+This amounts to $5\cdot4\cdot3\cdot1=60$ different choices.
+
+# Question 19
+
+> The probability of a dice yielding an odd number is:
+
+**1/2.** This is easy to check as out the 6 values in $\{1,2,3,4,5,6\}$, there are exactly 3 that are odd, so the probability of getting an odd result is:
+
+$$p=\frac{3}{6}={1}{2}.$$
+
+# Question 20
+
+> We inscribe an equilateral triangle in a circle and pick a chord of the circle at random. What is the probability that the chord is longer than the side of the equilateral triangle?
+
+**All of the above.** This was a trick question, as it corresponds to the well known [Bertrand Paradox](https://en.wikipedia.org/wiki/Bertrand_paradox_(probability)). The problem, as stated above is unclear enough to allow for different ways of computing the requested probability, thus yielding different results.
+
+## First Attempt
+
+We can pick a chord at random by assuming that one of its edges coincides with one of the three edges of the inscribed triangle and then pick the other uniformly at random, as shown in the following Figure:
+
+```{r}
+B = 1.0
+plot(c(), axes=FALSE, ann=FALSE, xlim = c(-B,B), ylim  = c(-B, B), asp = 1)
+theta <- seq(0, 2 * pi, length.out = 200) # Values to be used for drawing
+lines(cos(theta), sin(theta))
+# Triangle edges
+tth <- c(0, 2*pi/3, 4*pi/3, 2*pi)
+triangle.x <- cos(tth)
+triangle.y <- sin(tth)
+lines(triangle.x, triangle.y)
+# Draw a single triangle edge
+a.x <- 1
+a.y <- 0
+points(x = a.x, y = a.y, pch = 19, col = "black")
+# Draw some chords around the circle
+th <- seq(15, 345, 30) # angles of 15, 45, ..., 345 degrees
+xs <- cos(th)
+ys <- sin(th)
+points(x = xs, y = ys, pch = 19, col="coral")
+for (i in 1:length(xs)) {
+  lines(c(a.x, xs[i]), c(a.y, ys[i]), col="coral")
+}
+```
+So, a chord in this case is larger than the side of the equilateral triangle exactly when the coloured edge falls into the coloured circular arc shown below:
+
+```{r}
+B = 1.0
+plot(c(), axes=FALSE, ann=FALSE, xlim = c(-B,B), ylim  = c(-B, B), asp = 1)
+theta <- seq(0, 2 * pi, length.out = 200) # Values to be used for drawing
+large <- theta[theta > 2*pi/3 & theta < 4*pi/3]
+small <- theta[theta < 2*pi/3 | theta > 4*pi/3]
+lines(cos(small), sin(small))
+lines(cos(large), sin(large), col = "coral", lwd = 4)
+# Triangle edges
+tth <- c(0, 2*pi/3, 4*pi/3, 2*pi)
+triangle.x <- cos(tth)
+triangle.y <- sin(tth)
+lines(triangle.x, triangle.y)
+# Draw a single triangle edge
+a.x <- 1
+a.y <- 0
+points(x = a.x, y = a.y, pch = 19, col = "black")
+# 
+```
+Given that all three arcs are of equal length, the requested probability is $p=1/3$.
+
+## Second Attempt
+
+Another way to randomly construct a chord in a circle is to pick its midpoint at random, in which case, we have a situation like the one shown below (picking all chord middle points on the same diameter just for illustration purposes):
+
+```{r}
+B = 1.0
+plot(c(), axes=FALSE, ann=FALSE, xlim = c(-B,B), ylim  = c(-B, B), asp = 1)
+theta <- seq(0, 2 * pi, length.out = 200) # Values to be used for drawing
+lines(cos(theta), sin(theta))
+# Triangle edges
+tth <- c(0, 2*pi/3, 4*pi/3, 2*pi)
+triangle.x <- cos(tth)
+triangle.y <- sin(tth)
+lines(triangle.x, triangle.y)
+# Draw a single triangle edge
+a.x <- 1
+a.y <- 0
+points(x = a.x, y = a.y, pch = 19, col = "black")
+# Draw flipped triangle for reference
+ftth <- pi - tth
+ftriangle.x <- cos(ftth)
+ftriangle.y <- sin(ftth)
+lines(ftriangle.x, ftriangle.y, col = "#00000040", lty = "dashed")
+# Draw a diameter on which we place middle points
+lines(c(a.x, -1), c(a.y, 0))
+# Draw some chords
+for (mx in seq(-0.95, 0.95, 0.10)) {
+  my <- sqrt(1 - mx^2)
+  colour <- "coral"
+  if (mx > -0.5 && mx < 0.5) {
+    colour <- "turquoise"
+  }
+  lines(c(mx, mx), c(my, -my), col = colour)
+  points(x = mx, y = 0, pch = 19, col = colour)
+}
+```
+By rotating the above figure we can easily see that all midpoints chosen into the turquoise circle result to chords of length **less** than the triangle's side while all midpoints in the coral coloured area result to chords **greater** than the triangle's side.
+
+```{r}
+B = 1.0
+plot(c(), axes=FALSE, ann=FALSE, xlim = c(-B,B), ylim  = c(-B, B), asp = 1)
+theta <- seq(0, 2 * pi, length.out = 200) # Values to be used for drawing
+lines(cos(theta), sin(theta))
+# Triangle edges
+tth <- c(0, 2*pi/3, 4*pi/3, 2*pi)
+triangle.x <- cos(tth)
+triangle.y <- sin(tth)
+lines(triangle.x, triangle.y)
+# Draw a single triangle edge
+a.x <- 1
+a.y <- 0
+points(x = a.x, y = a.y, pch = 19, col = "black")
+# Draw inner circle
+r <- 0.5
+polygon(r * cos(theta), r * sin(theta), col = "turquoise", lty = "dashed")
+polygon(cos(theta), sin(theta), col = "#FF7F5050")
+```
+
+This clearly results to probability (recalling that the area of a circle is given by $A=\pi r^2$):
+
+$$p=\frac{\pi(0.5)^2}{\pi1^2}=0.5^2=0.25=\frac{1}{4}.$$
+
+## Third Attempt
+
+Similarly to the above, we can pick a radius of the circle and draw a chord on a random point of this radius as a perpendicular line to it (each chord in a circle is uniquely determined by a radius and a point on it). So, for example, we could draw something like the following:
+
+```{r}
+B = 1.0
+plot(c(), axes=FALSE, ann=FALSE, xlim = c(-B,B), ylim  = c(-B, B), asp = 1)
+theta <- seq(0, 2 * pi, length.out = 200) # Values to be used for drawing
+lines(cos(theta), sin(theta))
+# Triangle edges
+tth <- c(0, 2*pi/3, 4*pi/3, 2*pi)
+triangle.x <- cos(tth)
+triangle.y <- sin(tth)
+lines(triangle.x, triangle.y)
+# Draw a single triangle edge
+a.x <- -1
+a.y <- 0
+points(x = a.x, y = a.y, pch = 19, col = "black")
+# Draw a radius
+lines(c(0, -1), c(0, 0))
+# Draw some chords
+for (mx in seq(-0.09, -0.89, -0.05)) {
+  my <- sqrt(1 - mx^2)
+  colour <- "turquoise"
+  if (mx > -0.5) {
+    colour <- "coral"
+  }
+  lines(c(mx, mx), c(my, -my), col = colour)
+}
+```
+As you might guess, the radius itself is of no importance, i.e., we can rotate it arbitrarily. Also, observe that at the above figure the triangle's side cutting the draw radius does so exactly at its middle point, so half of the times, a randomly drawn chord will have length greater than that side and half times it will not, i.e.:
+
+$$p=\frac{1}{2}.$$
+
+## So...?
+
+So far, we have seen that there are three different interpretations of "randomly selecting a chord" which result to three different results. Which one should be the correct one? Well, there are various lines of attack to this question but maybe the most straightforward would be to see the corresponding distributions for each the above approaches, i.e., pick a large sample of random chords as per each approach and draw them, trying to verify whether they disitribute uniformly on the unit disc. To do so, we first create a utility function that draws a set of chords on a unit circle:
+
+```{r}
+# `chords` is a list of lists of start end x and y values (separately), each corresponding to the same chord.
+draw_chords <- function(chords) {
+  B = 1.0
+  plot(c(), axes=FALSE, ann=FALSE, xlim = c(-B,B), ylim  = c(-B, B), asp = 1)
+  theta <- seq(0, 2 * pi, length.out = 200) # Values to be used for drawing
+  lines(cos(theta), sin(theta))
+  for (chord in chords) {
+    lines(chord[[1]], chord[[2]], lwd = 0.2, col = "#00000020")
+  }
+}
+```
+
+Then, we can first try and sample chords using our first approach, i.e., by randomly select the chord endpoints, so:
+
+```{r}
+N <- 1000 # Number of chords in sample
+start_theta <- sample(seq(0, 2*pi, 0.001), N, replace = TRUE)
+end_theta <- sample(seq(0, 2*pi, 0.001), N, replace = TRUE)
+chords <- list()
+for (i in 1:N) {
+  thetas <- c(start_theta[i], end_theta[i])
+  chords[[i]] <- list(cos(thetas), sin(thetas))
+}
+# Draw chords
+draw_chords(chords)
+```
+
+This seems pretty much uniform, so let us also check the other two approaches. We now sample random chords by picking their midpoints at random and then computing the chord edges.
+
+```{r}
+# Midpoint polar coordinates
+mtheta <- sample(seq(0, 2*pi, 0.001), N, replace = TRUE)
+# There is a whole lot to explain about why we take square roots here...
+mr <- sqrt(sample(seq(0, 1, 0.001), N, replace = TRUE))
+# Vectorised operations to speed up execution
+cs <- cos(mtheta)
+ss <- sin(mtheta)
+my <- sqrt(1 - mr^2)
+chords <- list()
+for (i in 1:N) {
+  a <- c(mr[i], my[i])
+  b <- c(mr[i], -my[i])
+  rot <- matrix(c(cs[i], ss[i], -ss[i], cs[i]), nrow = 2, ncol = 2, byrow = TRUE)
+  ra <- rot %*% a
+  rb <- rot %*% b
+  chords[[i]] <- list(c(ra[1], rb[1]), c(ra[2], rb[2]))
+}
+# Draw chords
+draw_chords(chords)
+```
+
+Okay, this seems less uniform than the previous one. Let us also explore the third approach:
+
+```{r}
+# Midpoint polar coordinates
+mtheta <- sample(seq(0, 2*pi, 0.001), N, replace = TRUE)
+mr <- sample(seq(0, 1, 0.001), N, replace = TRUE)
+# Vectorised operations to speed up execution
+cs <- cos(mtheta)
+ss <- sin(mtheta)
+my <- sqrt(1 - mr^2)
+chords <- list()
+for (i in 1:N) {
+  a <- c(mr[i], my[i])
+  b <- c(mr[i], -my[i])
+  rot <- matrix(c(cs[i], ss[i], -ss[i], cs[i]), nrow = 2, ncol = 2, byrow = TRUE)
+  ra <- rot %*% a
+  rb <- rot %*% b
+  chords[[i]] <- list(c(ra[1], rb[1]), c(ra[2], rb[2]))
+}
+# Draw chords
+draw_chords(chords)
+```
+
+This looks like the most uniform.
+
+But, all those are just simulations to get an intuition. The original view of Bertrand (and many other mathematicians), is that we cannot actually pick a correct formulation and make any calculations the way the problem has been posed, because it is ill-defined, i.e., the setting itself is not clear enough to guide us through the process. Thus, all of the above approaches (and results) are equally good (or bad).
+
+The point of all this is to be careful with how things are described within a particular probabilistic setting!
