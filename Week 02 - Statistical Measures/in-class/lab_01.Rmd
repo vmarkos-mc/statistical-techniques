@@ -1,0 +1,100 @@
+---
+title: "Lab 01"
+author: "V. Markos"
+date: "2026-10-20"
+output: html_document
+---
+
+# Introduction
+
+In `ESS11e04_2/ESS11e04_2.csv` you can find a (large) dataset from a social study 
+conducted throughout the EU. More information can be found [here](https://ess.sikt.no/en/datafile/242aaa39-3bbb-40f5-98bf-bfb1ce53d8ef?tab=0&elems=4cfef379-934d-41e6-8c3c-4b77f9d91232). You can also find more on the variables,
+and many descriptive statistics in `ESS11e04_2 codebook.html` (open in any browser).
+
+We are going to work with those data to showcase some (mostly) descriptive 
+statistics manipulations using R.
+
+# Loading and Cleaning Data
+
+To load our data, we should make sure that we work in the correct directory, so:
+
+```{r}
+# This did not work in-class since the lab user cannot modify the PATH system variable. At home, it should work.
+# setwd(file.path("C", "Users", "MC", "Documents", "Courses", "ST", "Week 02 - Statistical Measures", "in-class"))
+```
+
+> **Remark 1.** You can also navigate to different directories from the Files panel on the right.
+
+> **Remark 2.** On Windows, you might need to actually escape the `\` character by either using `file.path` or `\\`
+
+Having set our working directory, we can now attempt to load our data:
+
+```{r}
+ess_data <- read.csv2("ESS11e04_2/ESS11e04_2.csv")
+```
+
+If you check on the top right "Environment" panel, you will realise that our data, most probably, have not loaded correctly (50116 objects of 1 variable each is not
+what we should expect). This is most probably an issue with formatting. Before we actually dive into the data, we try with the legacy `read.csv()` instead of `read.csv2()`:
+
+```{r}
+ess_data <- read.csv2("ESS11e04_2/ESS11e04_2.csv")
+```
+
+> **Tip.** In many cases, RStudio caches data, so you might also want to wipe those clear before reloading data from disk. To do so, click once on the broom icon within the Environment panel (top-right, toolbar).
+
+So, since the data still look the same, so we should try and find out what is going on. Quickly opening the provided csv with, e.g., MS Excel (even a text editor might suffice), uncovers that all values are (as expected, comma separated). So, we should try to make this explicit to `read.csv()`:
+
+```{r}
+ess_data <- read.csv("ESS11e04_2/ESS11e04_2.csv", sep = ",")
+```
+
+After we loaded the data in the above way, things worked correctly, as we infer from reviewing the data in the Environment panel (if you click on the corresponding entry, you can see a built-in preview with many descriptive statistics already computed for you).
+
+The next step is to get a summary of those statistics:
+
+```{r}
+summary(ess_data)
+```
+Since this output is useless due to its vastness we might well try a different way to summarise things:
+
+```{r}
+str(ess_data)
+```
+This is maybe more useful in terms of providing more meaningful information about each column (each variable). To begin with, observe that data has been read as a `chr`, i.e., a character and not a date object. So, one correction we might be interested into would be to actually cast this to a date object.
+
+```{r}
+ess_data$proddate <- as.Date(ess_data$proddate, format = "%d.%m.%y")
+```
+
+Now, let us keep just a few of those columns to work with for the rest of this session;
+
+```{r}
+# Data frames are the internal representations of datasets in R.
+ess_pol <- data.frame(
+  ess_data$cntry,
+  ess_data$nwspol,
+  ess_data$netusoft,
+  ess_data$netustm,
+  ess_data$ppltrst
+)
+str(ess_pol)
+```
+
+Optionally, you might also want to export this subset as a CSV, e.g., using:
+
+```{r}
+write.csv(ess_pol, "ess_pol.csv")
+```
+
+Now, we might be interested into counting participants by each country. To do so, we first count unique values in `ess_pol$cntry`:
+
+```{r}
+unique(ess_pol$ess_data.cntry)
+```
+
+One way of doing so and, in general, of performing any SQL-equivalent `GROUP BY` computation,
+us by using `aggregate()`.
+
+```{r}
+aggregate(ess_pol, by = list(ess_pol$ess_data.cntry), FUN = mean)
+```

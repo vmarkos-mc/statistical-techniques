@@ -1,0 +1,93 @@
+---
+title: "The Birthday Paradox"
+author: "Vassilis Markos"
+output:
+  html_document:
+    df_print: paged
+---
+
+# The Birthday Paradox
+
+The "Paradox" goes like that:
+
+> In a room of $n$ people what is the minimum value of $n$ such that at least two people in that room share birthdays?
+
+## Some Initial Thoughts
+
+To begin with, $n=1$ is not the answer, since a single person cannot share birthday with anybody else in the room. In the same way, we should not consider values of $n$ greater than 365, assuming no leap years for a moment. So, we are left with:
+
+$$n\in\{2,3,\ldots,365\}.$$
+
+## A Simulation
+
+We can simulate a room of $n$ people as a list of $n$ numbers ranging from 1 up to 365, with each number corresponding to the day each person has been born. So, whenever we have a sample containing at least one pair of duplicates, we have two people in that room sharing birthday.
+
+Now, in order to actually estimate the corresponding probability, we just have to repeat the above many times.
+
+```{r}
+bday_simulation <- function() {
+  N <- 100
+  for (n in 2:365) {
+    hits <- 0
+    for (i in 1:N) {
+      room <- sample(1:365, n, replace = TRUE)
+      dedup <- unique(room)
+      if (length(dedup) < length(room)) {
+        # This means there are some duplicates, so some people share birthday
+        hits <- hits + 1
+      }
+    }
+    prob_same_bday = hits / N
+    if (prob_same_bday > 0.50) {
+      return(n)
+    }
+  }
+  return(366)
+}
+results <- c() # c() constructs an empty vector (column)
+for (i in 1:100) {
+  results[i] <- bday_simulation()
+}
+res_table <- table(results)
+print(res_table)
+barplot(res_table)
+```
+
+## Probabilistic Reasoning
+
+So, we want the probability that two out of $n$ people in a room share birthday for some $n=2,3,4\ldots,365$. It is easier to compute the probability that no two people share birthday in a room, i.e., that among the $n$ people we can find $n$ different birthdays. We can think of this as a process of choosing $n$ (pairwise) different dates among the 365 days of the year. So:
+
+* For the first person, we have 365 days to choose from.
+* For the second person, we have $365-1=364$ choices, since one day has been assigned to the first person.
+* For third person, we have $365-2=363$ days...
+* ...and so on and so forth.
+* For the $n$-th person, we have $365-(n-1)=365-n+1$.
+
+So, in total, we have:
+
+$$365\cdot364\cdots(365-n+1)$$
+different dates combinations in which $n$ people do not share birthday. In total, we have:
+
+$$\underbrace{365\cdot365\cdots 365}_n=365^n$$
+possible dates combinations, so, the probability of two people in a room of $n$ people not sharing birthday is exactly:
+
+$$\frac{365\cdot364\cdots(365-n+1)}{365^n}=\frac{365}{365}\frac{364}{365}\cdots\frac{365-n+1}{365}=\prod_{k=0}^{n-1}\frac{365-k}{365}.$$
+So, the probability that at least two people share birthday is:
+
+$$p=1-\prod_{k=0}^{n-1}\frac{365-k}{365}.$$
+
+We can now compute $n$ using a small script:
+
+```{r}
+for (n in 2:365) {
+  product <- 1 # Initialise the product variable to 1
+  for (k in 0:(n-1)) {
+    product <- product * (365 - k) / 365
+  }
+  p <- 1 - product
+  if (p > 0.5) {
+    print(paste("Value of n:", n))
+    break;
+  }
+}
+```
