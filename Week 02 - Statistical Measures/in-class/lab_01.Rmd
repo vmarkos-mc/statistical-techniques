@@ -53,12 +53,12 @@ After we loaded the data in the above way, things worked correctly, as we infer 
 The next step is to get a summary of those statistics:
 
 ```{r}
-summary(ess_data)
+# summary(ess_data)
 ```
 Since this output is useless due to its vastness we might well try a different way to summarise things:
 
 ```{r}
-str(ess_data)
+# str(ess_data)
 ```
 This is maybe more useful in terms of providing more meaningful information about each column (each variable). To begin with, observe that data has been read as a `chr`, i.e., a character and not a date object. So, one correction we might be interested into would be to actually cast this to a date object.
 
@@ -97,4 +97,33 @@ us by using `aggregate()`.
 
 ```{r}
 aggregate(ess_pol, by = list(ess_pol$ess_data.cntry), FUN = mean)
+```
+Before we proceed, let us create a small table describing our data frame and the attributes we have kept:
+
+| Attribute     | Description           |
+| ---           | ---                   |
+| cntry         | Country of origin     |
+| nwspol        | News about politics and current affairs, watching, reading or listening, in minutes |
+| netusoft      | Internet use, how often |
+| netustm       | Internet use, how much time on typical day, in minutes |
+| ppltrst       | Most people can be trusted or you can't be too careful |
+
+## Trying a simple test
+
+Just for demonstration purpose, we are going to use `t.test` to test wether there is any difference between participants from Austria and Belgium regarding the time in minutes they devote to politics related news. So, first, we have to extract the two populations of our interest:
+
+```{r}
+ess_pol <- read.csv('ess_pol.csv', sep = ',')
+str(ess_pol)
+```
+We see that we should turn `ess_data.cntry` into a factor, i.e.:
+
+```{r}
+ess_pol$ess_data.cntry <- as.factor(ess_pol$ess_data.cntry)
+str(ess_pol)
+```
+Now, we can start working with the data:
+
+```{r}
+# aut_nwspol <- ess_pol[ess_data.cntry == 'AT']
 ```
