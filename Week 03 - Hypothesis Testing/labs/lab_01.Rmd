@@ -98,3 +98,31 @@ us by using `aggregate()`.
 ```{r}
 aggregate(ess_pol, by = list(ess_pol$ess_data.cntry), FUN = mean)
 ```
+
+## Simple Hypothesis Testing
+
+First, reload the dataset:
+
+```{r}
+ess_pol <- read.csv('ess_pol.csv', sep = ',')
+summary(ess_pol)
+```
+
+Now, we proceed to extract some dataset subsets:
+
+```{r}
+austria <- ess_pol[ess_pol$ess_data.cntry == 'AT', ]
+summary(austria)
+```
+
+We repeat the same process for Belgium: 
+
+```{r}
+belgium <- ess_pol[ess_pol$ess_data.cntry == 'BG', ]
+summary(belgium)
+```
+We observe that `nwspol` mean is quite different for Austria and Belgium, thus, we might attempt a t-test - assuming normality of the underlying populations.
+
+```{r}
+t.test(austria$ess_data.nwspol, belgium$ess_data.nwspol)
+```

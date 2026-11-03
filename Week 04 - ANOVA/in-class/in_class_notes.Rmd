@@ -1,0 +1,91 @@
+---
+title: "In Class Notes"
+author: "V. Markos"
+date: "2026-10-27"
+output: html_document
+---
+
+# Example Population Comparison
+
+We are re-computing the values from Week 04, slide 10;
+
+```{r}
+m_1 <- 51
+m_2 <- 48
+s_1 <- 5
+s_2 <- 7
+n_1 <- 40
+n_2 <- 36
+m <- m_1 - m_2
+s_sq <- s_1^2 / n_1 + s_2^2 / n_2
+s <- sqrt(s_sq)
+# Also compute the normal distribution tail values
+a <- 0.01
+qnorm(a, mean = m, sd = s)
+qnorm(1-a, mean = m, sd = s)
+```
+# Example t-stat computation from slide 17
+
+```{r}
+n <- 26
+a <- 0.05
+degf <- n - 1
+qt(1-a/2, degf)
+```
+# t-stat computation from slide 32
+
+```{r}
+n <- 14
+a <- 0.05
+degf <- n - 1
+qt(1-a, degf)
+```
+# Weight Difference `t.test` Demo
+
+## Working Directly with Differences
+
+Lets first create our data:
+
+```{r}
+wd <- c(3, 2, 2, 10, 1, -1, 0, 7, 2, 3, -1, 4, 2, 1)
+length(wd)
+```
+Now, we are interested into computing the actual single-sided t-test values. To do so:
+
+```{r}
+a <- 0.05
+t.test(wd, alternative = "greater", mu = 0, conf.level = 1-a)
+```
+Let us now interpret a bit those results line by line:
+
+* To begin with, the function returns all important values, i.e.,
+
+  - the t-stat, which is $t=3.1382$;
+  - the degrees of freedom ($n-1$);
+  - the corresponding p-value: $p=0.003924$.
+  
+* Next, we are presented with a textual description of the Alternative Hypothesis, i.e.: true mean is greater than 0.
+
+* We are also provided with a 95% confidence interval (had we provided a different significance level, we would get a different confidence interval): $(1.089226, +\infty)$.
+
+* We also get a sample estimate for the mean value of x in our case, which is 2.5, i.e., we get the sample estimate of the mean for the particular data we have included.
+
+## Working With the Original Data
+
+We could also work with the two vectors:
+
+```{r}
+before <- c(62, 62, 65, 88, 76, 57, 60, 59, 54, 68, 65, 63, 60, 56)
+after <- c(59, 60, 63, 78, 75, 58, 60, 52, 52, 65, 66, 59, 58, 55)
+```
+
+Now, we can try a paired t-test to see how things work:
+
+```{r}
+t.test(before, after, alternative = "greater", paired = TRUE)
+```
+Again, we get the very same results. So, using `t.test` you do not even need to worry about subtracting the data. You just need to decide whether there is any pairing in you data or not and then use `t.test` accordingly.
+
+## Okay, But, When are Data Paired?
+
+In general, pairing in data occurs when we sample the same initial sample more than once, e.g., as in the diet setting, above. In general, independent sampling takes place by getting two different samples from different parts of the population. That means that we do not try deliberately to get the same observations from one sample also to the other. So, any case that does not fall into that description, is suspicious of pairing.

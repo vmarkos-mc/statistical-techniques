@@ -1,0 +1,41 @@
+---
+title: "In class"
+author: "V. Markos"
+date: "2026-10-20"
+output: html_document
+---
+
+## A Note on Normalising Random Variables
+
+To begin with, we roll a single die a few times:
+
+```{r}
+N <- 1000
+rolls <- sample(1:6, N, replace = TRUE)
+hist(rolls)
+```
+So, let us now repeat it a few times:
+
+```{r}
+plot_avg_rolls <- function(n) {
+  N <- 1000
+  rolls <- c()
+  for (i in 1:n) {
+    # Wrong way to assign to vector, since we assign only one value each time
+    #rolls[i] <- sample(1:6, N, replace = TRUE)
+    # Correct way to assign to vector, creating essentially a matrix
+    rolls[[i]] <- sample(1:6, N, replace = TRUE)
+  }
+  avg_rolls <- rep(0, N) # Create an initially filled with N zeroes vector
+  for (i in 1:n) {
+    avg_rolls <- avg_rolls + rolls[[i]]
+  }
+  hist(avg_rolls)
+}
+plot_avg_rolls(5)
+```
+We can now try to roll 32 dice:
+
+```{r}
+plot_avg_rolls(32)
+```
