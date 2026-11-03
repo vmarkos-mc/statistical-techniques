@@ -11,7 +11,7 @@
 
 <meta name="author" content="V. Markos" />
 
-<meta name="date" content="2026-10-27" />
+<meta name="date" content="2026-11-03" />
 
 <title>In Class Notes</title>
 
@@ -352,122 +352,122 @@ display: none;
 
 <h1 class="title toc-ignore">In Class Notes</h1>
 <h4 class="author">V. Markos</h4>
-<h4 class="date">2026-10-27</h4>
+<h4 class="date">2026-11-03</h4>
 
 </div>
 
 
-<div id="example-population-comparison" class="section level1">
-<h1>Example Population Comparison</h1>
-<p>We are re-computing the values from Week 04, slide 10;</p>
-<pre class="r"><code>m_1 &lt;- 51
-m_2 &lt;- 48
-s_1 &lt;- 5
-s_2 &lt;- 7
-n_1 &lt;- 40
-n_2 &lt;- 36
-m &lt;- m_1 - m_2
-s_sq &lt;- s_1^2 / n_1 + s_2^2 / n_2
-s &lt;- sqrt(s_sq)
-# Also compute the normal distribution tail values
-a &lt;- 0.01
-qnorm(a, mean = m, sd = s)</code></pre>
-<pre><code>## [1] -0.2785094</code></pre>
-<pre class="r"><code>qnorm(1-a, mean = m, sd = s)</code></pre>
-<pre><code>## [1] 6.278509</code></pre>
+<div id="anova-example-by-hand" class="section level1">
+<h1>ANOVA Example (By Hand)</h1>
+<p>In an attempt to explain the handwritten operations on slide 12, we
+repeat the same operations here in R. To begin with, let us write down
+our data:</p>
+<pre class="r"><code>N &lt;- 10
+a &lt;- c(100, 134, 132, 125, 121, 144, 110, 133, 113, 145)
+b &lt;- c(120, 154, 152, 150, 141, 161, 131, 160, 132, 154)
+c &lt;- c(130, 160, 161, 157, 151, 170, 140, 165, 142, 162)</code></pre>
+<p>Next, we compute the corresponding means (for each hospital and the
+global mean):</p>
+<pre class="r"><code>ma &lt;- mean(a)
+mb &lt;- mean(b)
+mc &lt;- mean(c)
+m &lt;- mean(c(a, b, c))</code></pre>
+<p>We now proceed to compute SSW:</p>
+<pre class="r"><code>sswa &lt;- sum((a - ma)^2)
+sswb &lt;- sum((b - mb)^2)
+sswc &lt;- sum((c - mc)^2)
+ssw &lt;- sswa + sswb + sswc</code></pre>
+<p>Now, we also need to compute SSB:</p>
+<pre class="r"><code>ms &lt;- c(ma, mb, mc)
+ssb &lt;- 10 * sum((ms - m)^2)</code></pre>
+<p>At last, we compute the corresponding F statistic:</p>
+<pre class="r"><code>k &lt;- 3 # Number of samples
+df_enum &lt;- k - 1
+df_denom &lt;- 3*N - k
+f_stat &lt;- (ssb / df_enum) / (ssw / df_denom)
+print(f_stat)</code></pre>
+<pre><code>## [1] 10.94788</code></pre>
+<p>Now, what remains is to actually find the probability with which we
+get this F-stat value:</p>
+<pre class="r"><code># pf() returns the cutoff point for the rightmost tail for the F distribution.
+p &lt;- 1 - pf(f_stat, df_enum, df_denom)
+print(p)</code></pre>
+<pre><code>## [1] 0.0003297989</code></pre>
+<p>So, the computed p value in our case is <span class="math inline">\(p=0.0003297989\)</span>.</p>
 </div>
-<div id="example-t-stat-computation-from-slide-17" class="section level1">
-<h1>Example t-stat computation from slide 17</h1>
-<pre class="r"><code>n &lt;- 26
-a &lt;- 0.05
-degf &lt;- n - 1
-qt(1-a/2, degf)</code></pre>
-<pre><code>## [1] 2.059539</code></pre>
-</div>
-<div id="t-stat-computation-from-slide-32" class="section level1">
-<h1>t-stat computation from slide 32</h1>
-<pre class="r"><code>n &lt;- 14
-a &lt;- 0.05
-degf &lt;- n - 1
-qt(1-a, degf)</code></pre>
-<pre><code>## [1] 1.770933</code></pre>
-</div>
-<div id="weight-difference-t.test-demo" class="section level1">
-<h1>Weight Difference <code>t.test</code> Demo</h1>
-<div id="working-directly-with-differences" class="section level2">
-<h2>Working Directly with Differences</h2>
-<p>Lets first create our data:</p>
-<pre class="r"><code>wd &lt;- c(3, 2, 2, 10, 1, -1, 0, 7, 2, 3, -1, 4, 2, 1)
-length(wd)</code></pre>
-<pre><code>## [1] 14</code></pre>
-<p>Now, we are interested into computing the actual single-sided t-test
-values. To do so:</p>
-<pre class="r"><code>a &lt;- 0.05
-t.test(wd, alternative = &quot;greater&quot;, mu = 0, conf.level = 1-a)</code></pre>
+<div id="anova-example-by-r" class="section level1">
+<h1>ANOVA Example (By R)</h1>
+<p>We first create three columns for our data:</p>
+<pre class="r"><code>a &lt;- c(100, 134, 132, 125, 121, 144, 110, 133, 113, 145)
+b &lt;- c(120, 154, 152, 150, 141, 161, 131, 160, 132, 154)
+c &lt;- c(130, 160, 161, 157, 151, 170, 140, 165, 142, 162)</code></pre>
+<p>Now, we can combine those as in the slides into a single table:</p>
+<pre class="r"><code>hospital_stay &lt;- data.frame(c(a, b, c), c(rep(&#39;A&#39;, 10), rep(&#39;B&#39;, 10), rep(&#39;C&#39;, 10)))
+print(hospital_stay)</code></pre>
+<pre><code>##    c.a..b..c. c.rep..A...10...rep..B...10...rep..C...10..
+## 1         100                                           A
+## 2         134                                           A
+## 3         132                                           A
+## 4         125                                           A
+## 5         121                                           A
+## 6         144                                           A
+## 7         110                                           A
+## 8         133                                           A
+## 9         113                                           A
+## 10        145                                           A
+## 11        120                                           B
+## 12        154                                           B
+## 13        152                                           B
+## 14        150                                           B
+## 15        141                                           B
+## 16        161                                           B
+## 17        131                                           B
+## 18        160                                           B
+## 19        132                                           B
+## 20        154                                           B
+## 21        130                                           C
+## 22        160                                           C
+## 23        161                                           C
+## 24        157                                           C
+## 25        151                                           C
+## 26        170                                           C
+## 27        140                                           C
+## 28        165                                           C
+## 29        142                                           C
+## 30        162                                           C</code></pre>
+<p>Also, we change colnames:</p>
+<pre class="r"><code>names(hospital_stay) &lt;- c(&#39;StayDuration&#39;, &#39;Hospital&#39;)</code></pre>
+<p>We can now perform an ANOVA as simply as:</p>
+<pre class="r"><code>oneway.test(hospital_stay$StayDuration ~ hospital_stay$Hospital)</code></pre>
 <pre><code>## 
-##  One Sample t-test
+##  One-way analysis of means (not assuming equal variances)
 ## 
-## data:  wd
-## t = 3.1382, df = 13, p-value = 0.003924
-## alternative hypothesis: true mean is greater than 0
-## 95 percent confidence interval:
-##  1.089226      Inf
-## sample estimates:
-## mean of x 
-##       2.5</code></pre>
-<p>Let us now interpret a bit those results line by line:</p>
-<ul>
-<li><p>To begin with, the function returns all important values,
-i.e.,</p>
-<ul>
-<li>the t-stat, which is <span class="math inline">\(t=3.1382\)</span>;</li>
-<li>the degrees of freedom (<span class="math inline">\(n-1\)</span>);</li>
-<li>the corresponding p-value: <span class="math inline">\(p=0.003924\)</span>.</li>
-</ul></li>
-<li><p>Next, we are presented with a textual description of the
-Alternative Hypothesis, i.e.: true mean is greater than 0.</p></li>
-<li><p>We are also provided with a 95% confidence interval (had we
-provided a different significance level, we would get a different
-confidence interval): <span class="math inline">\((1.089226,
-+\infty)\)</span>.</p></li>
-<li><p>We also get a sample estimate for the mean value of x in our
-case, which is 2.5, i.e., we get the sample estimate of the mean for the
-particular data we have included.</p></li>
-</ul>
-</div>
-<div id="working-with-the-original-data" class="section level2">
-<h2>Working With the Original Data</h2>
-<p>We could also work with the two vectors:</p>
-<pre class="r"><code>before &lt;- c(62, 62, 65, 88, 76, 57, 60, 59, 54, 68, 65, 63, 60, 56)
-after &lt;- c(59, 60, 63, 78, 75, 58, 60, 52, 52, 65, 66, 59, 58, 55)</code></pre>
-<p>Now, we can try a paired t-test to see how things work:</p>
-<pre class="r"><code>t.test(before, after, alternative = &quot;greater&quot;, paired = TRUE)</code></pre>
+## data:  hospital_stay$StayDuration and hospital_stay$Hospital
+## F = 10.25, num df = 2.000, denom df = 17.934, p-value = 0.001076</code></pre>
+<p>The results imply that we have actually a good reason to reject the
+null hypothesis, i.e., stay duration across all three hospitals is not
+the same.</p>
+<p>We can also get the same results (by default, assuming equal
+variances) using Bartlett’s test:</p>
+<pre class="r"><code>bartlett.test(hospital_stay$StayDuration ~ hospital_stay$Hospital)</code></pre>
 <pre><code>## 
-##  Paired t-test
+##  Bartlett test of homogeneity of variances
 ## 
-## data:  before and after
-## t = 3.1382, df = 13, p-value = 0.003924
-## alternative hypothesis: true mean difference is greater than 0
-## 95 percent confidence interval:
-##  1.089226      Inf
-## sample estimates:
-## mean difference 
-##             2.5</code></pre>
-<p>Again, we get the very same results. So, using <code>t.test</code>
-you do not even need to worry about subtracting the data. You just need
-to decide whether there is any pairing in you data or not and then use
-<code>t.test</code> accordingly.</p>
-</div>
-<div id="okay-but-when-are-data-paired" class="section level2">
-<h2>Okay, But, When are Data Paired?</h2>
-<p>In general, pairing in data occurs when we sample the same initial
-sample more than once, e.g., as in the diet setting, above. In general,
-independent sampling takes place by getting two different samples from
-different parts of the population. That means that we do not try
-deliberately to get the same observations from one sample also to the
-other. So, any case that does not fall into that description, is
-suspicious of pairing.</p>
-</div>
+## data:  hospital_stay$StayDuration by hospital_stay$Hospital
+## Bartlett&#39;s K-squared = 0.18582, df = 2, p-value = 0.9113</code></pre>
+<blockquote>
+<p>Observe that when running ANOVA by hand, we got a p value of 0.0003,
+while <code>oneway.test()</code> yielded a p value around 0.001. This is
+due to the default assumption of oneway.test() that variances are not
+the same. If we want, we can demand that this assumption is true, as
+follows:</p>
+</blockquote>
+<pre class="r"><code>oneway.test(hospital_stay$StayDuration ~ hospital_stay$Hospital, var.equal = TRUE)</code></pre>
+<pre><code>## 
+##  One-way analysis of means
+## 
+## data:  hospital_stay$StayDuration and hospital_stay$Hospital
+## F = 10.948, num df = 2, denom df = 27, p-value = 0.0003298</code></pre>
 </div>
 
 

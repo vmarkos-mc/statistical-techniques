@@ -2,7 +2,10 @@
 title: "Lab 01"
 author: "V. Markos"
 date: "2026-10-20"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
+fontfamily: cmbright
 ---
 
 # Introduction
@@ -14,91 +17,6 @@ and many descriptive statistics in `ESS11e04_2 codebook.html` (open in any brows
 We are going to work with those data to showcase some (mostly) descriptive 
 statistics manipulations using R.
 
-# Loading and Cleaning Data
-
-To load our data, we should make sure that we work in the correct directory, so:
-
-```{r}
-# This did not work in-class since the lab user cannot modify the PATH system variable. At home, it should work.
-# setwd(file.path("C", "Users", "MC", "Documents", "Courses", "ST", "Week 02 - Statistical Measures", "in-class"))
-```
-
-> **Remark 1.** You can also navigate to different directories from the Files panel on the right.
-
-> **Remark 2.** On Windows, you might need to actually escape the `\` character by either using `file.path` or `\\`
-
-Having set our working directory, we can now attempt to load our data:
-
-```{r}
-ess_data <- read.csv2("ESS11e04_2/ESS11e04_2.csv")
-```
-
-If you check on the top right "Environment" panel, you will realise that our data, most probably, have not loaded correctly (50116 objects of 1 variable each is not
-what we should expect). This is most probably an issue with formatting. Before we actually dive into the data, we try with the legacy `read.csv()` instead of `read.csv2()`:
-
-```{r}
-ess_data <- read.csv2("ESS11e04_2/ESS11e04_2.csv")
-```
-
-> **Tip.** In many cases, RStudio caches data, so you might also want to wipe those clear before reloading data from disk. To do so, click once on the broom icon within the Environment panel (top-right, toolbar).
-
-So, since the data still look the same, so we should try and find out what is going on. Quickly opening the provided csv with, e.g., MS Excel (even a text editor might suffice), uncovers that all values are (as expected, comma separated). So, we should try to make this explicit to `read.csv()`:
-
-```{r}
-ess_data <- read.csv("ESS11e04_2/ESS11e04_2.csv", sep = ",")
-```
-
-After we loaded the data in the above way, things worked correctly, as we infer from reviewing the data in the Environment panel (if you click on the corresponding entry, you can see a built-in preview with many descriptive statistics already computed for you).
-
-The next step is to get a summary of those statistics:
-
-```{r}
-summary(ess_data)
-```
-Since this output is useless due to its vastness we might well try a different way to summarise things:
-
-```{r}
-str(ess_data)
-```
-This is maybe more useful in terms of providing more meaningful information about each column (each variable). To begin with, observe that data has been read as a `chr`, i.e., a character and not a date object. So, one correction we might be interested into would be to actually cast this to a date object.
-
-```{r}
-ess_data$proddate <- as.Date(ess_data$proddate, format = "%d.%m.%y")
-```
-
-Now, let us keep just a few of those columns to work with for the rest of this session;
-
-```{r}
-# Data frames are the internal representations of datasets in R.
-ess_pol <- data.frame(
-  ess_data$cntry,
-  ess_data$nwspol,
-  ess_data$netusoft,
-  ess_data$netustm,
-  ess_data$ppltrst
-)
-str(ess_pol)
-```
-
-Optionally, you might also want to export this subset as a CSV, e.g., using:
-
-```{r}
-write.csv(ess_pol, "ess_pol.csv")
-```
-
-Now, we might be interested into counting participants by each country. To do so, we first count unique values in `ess_pol$cntry`:
-
-```{r}
-unique(ess_pol$ess_data.cntry)
-```
-
-One way of doing so and, in general, of performing any SQL-equivalent `GROUP BY` computation,
-us by using `aggregate()`.
-
-```{r}
-aggregate(ess_pol, by = list(ess_pol$ess_data.cntry), FUN = mean)
-```
-
 ## Simple Hypothesis Testing
 
 First, reload the dataset:
@@ -107,22 +25,93 @@ First, reload the dataset:
 ess_pol <- read.csv('ess_pol.csv', sep = ',')
 summary(ess_pol)
 ```
-
-Now, we proceed to extract some dataset subsets:
+Let us also review the aggregate distribution of all those variables per country:
 
 ```{r}
+aggregate(ess_pol, by = list(ess_pol$ess_data.cntry), FUN = mean)
+
+```
+
+The wrong way to proceed at this stage is to use a t-test to compare, say, Austria with Belgium, in terms of time devoted into politics related news:
+
+```{r}
+# THIS IS WRONG!
 austria <- ess_pol[ess_pol$ess_data.cntry == 'AT', ]
+belgium <- ess_pol[ess_pol$ess_data.cntry == 'BE', ]
+t.test(austria$ess_data.nwspol, belgium$ess_nwspol)
+```
+
+The first error here is that we have not cleaned our data, i.e., we have not dropped any dummy values. For example, as one reads [here](ESS11e04_2 codebook.html), 9999 for example, in `nwspol` means that no answer was provided, while 8888 and 7777 also have a meaning. So, one first approach might be:
+
+```{r}
+austria <- austria[!(austria$ess_data.nwspol %in% c(7777,8888,9999)) , ]
 summary(austria)
 ```
 
-We repeat the same process for Belgium: 
+Now we observe that there is at least one participant that devotes 1200 minutes (20 hours) per day on politics news. Since this might be a mistyped value, we might impose a seemingly artificial but, more or less, sound limit, e.g., by filtering out extreme values, too.
+
+In our case, we first examine how many such extremities occur:
 
 ```{r}
-belgium <- ess_pol[ess_pol$ess_data.cntry == 'BG', ]
+length(austria[austria$ess_data.nwspol > 600, ])
+```
+
+Since there are not that many extreme values, our choice does not make any substantial difference, so we might decide to keep those observations too. We now proceed to clean Belgium data too:
+
+```{r}
+belgium <- belgium[!(belgium$ess_data.nwspol %in% c(7777,8888,9999)) , ]
 summary(belgium)
 ```
-We observe that `nwspol` mean is quite different for Austria and Belgium, thus, we might attempt a t-test - assuming normality of the underlying populations.
+Let us again count extreme values:
+
+```{r}
+length(belgium[belgium$ess_data.nwspol > 600, ])
+```
+
+
+Again, we keep those as well. In case the extreme values for Belgians were far too many, we might have needed to revise our choice for Austria, too.
+
+Now, we feel (are we?) ready to perform a better t-test:
 
 ```{r}
 t.test(austria$ess_data.nwspol, belgium$ess_data.nwspol)
 ```
+
+So, again, we get the same result with quite a lot of confidence ($p<10^{-15}$),
+that is, the probability of Type I error is:
+
+$$p<0.000000000000001$$
+Again, are we allowed to use a t-test here? To use a t-test, we assume:
+
+* at first, that both populations are normally distributed, and;
+* no knowledge of population SD.
+
+The second hypothesis if fulfilled but what about the first one?
+
+The first step might be to plot the actual distribution, i.e., a histogram:
+
+```{r}
+hist(austria$ess_data.nwspol)
+```
+
+This is a bad histogram for many reasons, the most obvious being that we have too few bins (most of those being empty). We can make two (at least) changes to make things better:
+
+* use more bins;
+* exclude (temprorarily) any outliers.
+
+```{r}
+austria_hist <- austria[austria$ess_data.nwspol < 600, ]
+hist(austria_hist$ess_data.nwspol, breaks=50)
+```
+
+So, we can evidently infer that the distribution of our sample is not normal so, we should not have used the t-test in our case. We will explore in the future more adequate tests for populations of unknown distribution.
+
+> As a side note, a better histogram would have included all outliers in a separate unevenly sized bin:
+
+```{r}
+hist(austria$ess_data.nwspol, breaks=c(seq(0, 200, 10), 1200))
+```
+
+
+
+

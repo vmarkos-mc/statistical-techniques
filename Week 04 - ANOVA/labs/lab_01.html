@@ -366,1549 +366,27 @@ You can also find more on the variables, and many descriptive statistics
 in <code>ESS11e04_2 codebook.html</code> (open in any browser).</p>
 <p>We are going to work with those data to showcase some (mostly)
 descriptive statistics manipulations using R.</p>
-</div>
-<div id="loading-and-cleaning-data" class="section level1">
-<h1>Loading and Cleaning Data</h1>
-<p>To load our data, we should make sure that we work in the correct
-directory, so:</p>
-<pre class="r"><code># This did not work in-class since the lab user cannot modify the PATH system variable. At home, it should work.
-# setwd(file.path(&quot;C&quot;, &quot;Users&quot;, &quot;MC&quot;, &quot;Documents&quot;, &quot;Courses&quot;, &quot;ST&quot;, &quot;Week 02 - Statistical Measures&quot;, &quot;in-class&quot;))</code></pre>
-<blockquote>
-<p><strong>Remark 1.</strong> You can also navigate to different
-directories from the Files panel on the right.</p>
-</blockquote>
-<blockquote>
-<p><strong>Remark 2.</strong> On Windows, you might need to actually
-escape the <code>\</code> character by either using
-<code>file.path</code> or <code>\\</code></p>
-</blockquote>
-<p>Having set our working directory, we can now attempt to load our
-data:</p>
-<pre class="r"><code>ess_data &lt;- read.csv2(&quot;ESS11e04_2/ESS11e04_2.csv&quot;)</code></pre>
-<p>If you check on the top right “Environment” panel, you will realise
-that our data, most probably, have not loaded correctly (50116 objects
-of 1 variable each is not what we should expect). This is most probably
-an issue with formatting. Before we actually dive into the data, we try
-with the legacy <code>read.csv()</code> instead of
-<code>read.csv2()</code>:</p>
-<pre class="r"><code>ess_data &lt;- read.csv2(&quot;ESS11e04_2/ESS11e04_2.csv&quot;)</code></pre>
-<blockquote>
-<p><strong>Tip.</strong> In many cases, RStudio caches data, so you
-might also want to wipe those clear before reloading data from disk. To
-do so, click once on the broom icon within the Environment panel
-(top-right, toolbar).</p>
-</blockquote>
-<p>So, since the data still look the same, so we should try and find out
-what is going on. Quickly opening the provided csv with, e.g., MS Excel
-(even a text editor might suffice), uncovers that all values are (as
-expected, comma separated). So, we should try to make this explicit to
-<code>read.csv()</code>:</p>
-<pre class="r"><code>ess_data &lt;- read.csv(&quot;ESS11e04_2/ESS11e04_2.csv&quot;, sep = &quot;,&quot;)</code></pre>
-<p>After we loaded the data in the above way, things worked correctly,
-as we infer from reviewing the data in the Environment panel (if you
-click on the corresponding entry, you can see a built-in preview with
-many descriptive statistics already computed for you).</p>
-<p>The next step is to get a summary of those statistics:</p>
-<pre class="r"><code>summary(ess_data)</code></pre>
-<pre><code>##         name          essround     edition         proddate    
-##  Length   :50116   Min.   :11   Min.   :4.2   Length   :50116  
-##  N.unique :    1   1st Qu.:11   1st Qu.:4.2   N.unique :    1  
-##  N.blank  :    0   Median :11   Median :4.2   N.blank  :    0  
-##  Min.nchar:   10   Mean   :11   Mean   :4.2   Min.nchar:   10  
-##  Max.nchar:   10   3rd Qu.:11   3rd Qu.:4.2   Max.nchar:   10  
-##                    Max.   :11   Max.   :4.2                    
-##                                                                
-##       idno              cntry          dweight           pspwght       
-##  Min.   : 50002   Length   :50116   Min.   :0.08669   Min.   :0.03973  
-##  1st Qu.: 60020   N.unique :   30   1st Qu.:0.89696   1st Qu.:0.65377  
-##  Median : 69948   N.blank  :    0   Median :0.99937   Median :0.90070  
-##  Mean   : 78151   Min.nchar:    2   Mean   :1.00011   Mean   :1.00000  
-##  3rd Qu.: 80048   Max.nchar:    2   3rd Qu.:1.02525   3rd Qu.:1.17141  
-##  Max.   :273842                     Max.   :4.04213   Max.   :6.13132  
-##                                                                        
-##     pweight           anweight             nwspol        netusoft    
-##  Min.   :0.03148   Min.   : 0.002015   Min.   :   0   Min.   :1.000  
-##  1st Qu.:0.24718   1st Qu.: 0.175897   1st Qu.:  30   1st Qu.:4.000  
-##  Median :0.36358   Median : 0.433793   Median :  60   Median :5.000  
-##  Mean   :0.93203   Mean   : 0.932035   Mean   : 229   Mean   :4.202  
-##  3rd Qu.:1.31070   3rd Qu.: 1.216379   3rd Qu.: 120   3rd Qu.:5.000  
-##  Max.   :3.32427   Max.   :12.997417   Max.   :9999   Max.   :9.000  
-##                                                                      
-##     netustm        ppltrst          pplfair           pplhlp      
-##  Min.   :   0   Min.   : 0.000   Min.   : 0.000   Min.   : 0.000  
-##  1st Qu.: 120   1st Qu.: 3.000   1st Qu.: 4.000   1st Qu.: 3.000  
-##  Median : 240   Median : 5.000   Median : 6.000   Median : 5.000  
-##  Mean   :1706   Mean   : 5.211   Mean   : 6.097   Mean   : 5.246  
-##  3rd Qu.: 660   3rd Qu.: 7.000   3rd Qu.: 7.000   3rd Qu.: 7.000  
-##  Max.   :9999   Max.   :99.000   Max.   :99.000   Max.   :99.000  
-##                                                                   
-##     polintr         psppsgva        actrolga        psppipla    
-##  Min.   :1.000   Min.   :1.000   Min.   :1.000   Min.   :1.000  
-##  1st Qu.:2.000   1st Qu.:1.000   1st Qu.:1.000   1st Qu.:1.000  
-##  Median :3.000   Median :2.000   Median :2.000   Median :2.000  
-##  Mean   :2.664   Mean   :2.289   Mean   :2.178   Mean   :2.211  
-##  3rd Qu.:3.000   3rd Qu.:3.000   3rd Qu.:3.000   3rd Qu.:3.000  
-##  Max.   :9.000   Max.   :9.000   Max.   :9.000   Max.   :9.000  
-##                                                                 
-##     cptppola        trstprl          trstlgl          trstplc      
-##  Min.   :1.000   Min.   : 0.000   Min.   : 0.000   Min.   : 0.000  
-##  1st Qu.:1.000   1st Qu.: 2.000   1st Qu.: 3.000   1st Qu.: 5.000  
-##  Median :2.000   Median : 5.000   Median : 6.000   Median : 7.000  
-##  Mean   :2.256   Mean   : 5.967   Mean   : 7.136   Mean   : 7.174  
-##  3rd Qu.:3.000   3rd Qu.: 7.000   3rd Qu.: 8.000   3rd Qu.: 8.000  
-##  Max.   :9.000   Max.   :99.000   Max.   :99.000   Max.   :99.000  
-##                                                                    
-##     trstplt          trstprt           trstep          trstun     
-##  Min.   : 0.000   Min.   : 0.000   Min.   : 0.00   Min.   : 0.00  
-##  1st Qu.: 1.000   1st Qu.: 2.000   1st Qu.: 3.00   1st Qu.: 3.00  
-##  Median : 4.000   Median : 4.000   Median : 5.00   Median : 5.00  
-##  Mean   : 4.807   Mean   : 5.076   Mean   :10.14   Mean   :11.24  
-##  3rd Qu.: 5.000   3rd Qu.: 5.000   3rd Qu.: 7.00   3rd Qu.: 7.00  
-##  Max.   :99.000   Max.   :99.000   Max.   :99.00   Max.   :99.00  
-##                                                                   
-##       vote          prtvtdat        prtvtebe        prtvtfbg    
-##  Min.   :1.000   Min.   : 1.00   Min.   : 1.0    Min.   : 1.00  
-##  1st Qu.:1.000   1st Qu.: 2.00   1st Qu.: 3.0    1st Qu.: 3.00  
-##  Median :1.000   Median : 5.00   Median :10.0    Median :10.00  
-##  Mean   :1.394   Mean   :27.95   Mean   :30.3    Mean   :35.47  
-##  3rd Qu.:2.000   3rd Qu.:66.00   3rd Qu.:66.0    3rd Qu.:66.00  
-##  Max.   :9.000   Max.   :88.00   Max.   :99.0    Max.   :88.00  
-##                  NAs    :47762   NAs    :48522   NAs    :47877  
-##     prtvtchr        prtvtccy        prtvtiee        prtvtffi    
-##  Min.   : 1.00   Min.   : 1.00   Min.   : 1.00   Min.   : 1.00  
-##  1st Qu.: 2.00   1st Qu.: 8.00   1st Qu.: 2.00   1st Qu.: 2.00  
-##  Median :10.00   Median :66.00   Median : 6.00   Median : 6.00  
-##  Mean   :35.93   Mean   :40.95   Mean   :28.37   Mean   :20.99  
-##  3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:22.00  
-##  Max.   :88.00   Max.   :88.00   Max.   :88.00   Max.   :99.00  
-##  NAs    :48553   NAs    :49431   NAs    :48823   NAs    :48553  
-##     prtvtffr        prtvgde1        prtvgde2        prtvtegr    
-##  Min.   : 1.00   Min.   : 1.00   Min.   : 1.00   Min.   : 1.00  
-##  1st Qu.: 5.00   1st Qu.: 2.00   1st Qu.: 2.00   1st Qu.: 1.00  
-##  Median :66.00   Median : 4.00   Median : 4.00   Median : 3.00  
-##  Mean   :37.08   Mean   :27.42   Mean   :25.78   Mean   :25.17  
-##  3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:66.00  
-##  Max.   :88.00   Max.   :88.00   Max.   :88.00   Max.   :88.00  
-##  NAs    :48345   NAs    :47696   NAs    :47696   NAs    :47359  
-##     prtvthhu        prtvteis        prtvteie        prtvteil    
-##  Min.   : 1.00   Min.   : 2.00   Min.   : 1.00   Min.   : 1.00  
-##  1st Qu.: 5.25   1st Qu.: 7.00   1st Qu.: 2.00   1st Qu.: 4.00  
-##  Median : 6.00   Median : 8.00   Median : 4.00   Median :10.00  
-##  Mean   :29.27   Mean   :28.69   Mean   :25.31   Mean   :31.91  
-##  3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:66.00  
-##  Max.   :88.00   Max.   :99.00   Max.   :88.00   Max.   :88.00  
-##  NAs    :47998   NAs    :49274   NAs    :48099   NAs    :49210  
-##     prtvteit        prtvtblv        prtvclt1        prtvclt2    
-##  Min.   : 1.00   Min.   : 1.00   Min.   : 1.00   Min.   : 1.00  
-##  1st Qu.: 3.00   1st Qu.: 7.00   1st Qu.:12.00   1st Qu.:66.00  
-##  Median :66.00   Median :18.50   Median :66.00   Median :66.00  
-##  Mean   :41.13   Mean   :39.83   Mean   :43.34   Mean   :64.98  
-##  3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:66.00  
-##  Max.   :99.00   Max.   :88.00   Max.   :88.00   Max.   :88.00  
-##  NAs    :47251   NAs    :48864   NAs    :48751   NAs    :48751  
-##     prtvclt3        prtvtbme        prtvtinl        prtvtcno    
-##  Min.   : 3.00   Min.   : 1.00   Min.   : 1.0    Min.   : 1.00  
-##  1st Qu.:66.00   1st Qu.:10.00   1st Qu.: 3.0    1st Qu.: 3.00  
-##  Median :66.00   Median :12.00   Median : 7.0    Median : 7.00  
-##  Mean   :65.74   Mean   :28.61   Mean   :23.2    Mean   :19.34  
-##  3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:66.0    3rd Qu.: 9.00  
-##  Max.   :88.00   Max.   :88.00   Max.   :99.0    Max.   :88.00  
-##  NAs    :48751   NAs    :48507   NAs    :48421   NAs    :48779  
-##     prtvtfpl        prtvtept        prtvtbrs        prtvtesk    
-##  Min.   : 1.00   Min.   : 2.00   Min.   : 1.00   Min.   : 1.00  
-##  1st Qu.: 2.00   1st Qu.:16.00   1st Qu.:31.00   1st Qu.: 2.00  
-##  Median : 3.00   Median :18.00   Median :66.00   Median : 4.00  
-##  Mean   :21.23   Mean   :40.86   Mean   :52.75   Mean   :21.54  
-##  3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:77.00   3rd Qu.:66.00  
-##  Max.   :99.00   Max.   :88.00   Max.   :88.00   Max.   :88.00  
-##  NAs    :48674   NAs    :48743   NAs    :48553   NAs    :48674  
-##     prtvtgsi        prtvtges        prtvtese        prtvthch    
-##  Min.   : 1.00   Min.   : 1.00   Min.   : 1.0    Min.   : 1.00  
-##  1st Qu.: 3.00   1st Qu.: 2.00   1st Qu.: 5.0    1st Qu.: 3.00  
-##  Median :10.00   Median : 4.00   Median : 6.0    Median :66.00  
-##  Mean   :35.23   Mean   :31.17   Mean   :13.3    Mean   :38.56  
-##  3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.: 7.0    3rd Qu.:66.00  
-##  Max.   :99.00   Max.   :88.00   Max.   :88.0    Max.   :88.00  
-##  NAs    :48868   NAs    :48272   NAs    :48886   NAs    :48732  
-##     prtvtdua        prtvtdgb        contplt        donprty          badge      
-##  Min.   : 1.00   Min.   : 1.00   Min.   :1.00   Min.   :1.000   Min.   :1.000  
-##  1st Qu.: 1.00   1st Qu.: 2.00   1st Qu.:2.00   1st Qu.:2.000   1st Qu.:2.000  
-##  Median : 8.00   Median : 3.00   Median :2.00   Median :2.000   Median :2.000  
-##  Mean   :35.39   Mean   :27.61   Mean   :1.89   Mean   :1.969   Mean   :1.961  
-##  3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:2.00   3rd Qu.:2.000   3rd Qu.:2.000  
-##  Max.   :88.00   Max.   :88.00   Max.   :9.00   Max.   :9.000   Max.   :9.000  
-##  NAs    :47455   NAs    :48432                                                 
-##     sgnptit         pbldmna          bctprd         pstplonl    
-##  Min.   :1.000   Min.   :1.000   Min.   :1.000   Min.   :1.000  
-##  1st Qu.:2.000   1st Qu.:2.000   1st Qu.:2.000   1st Qu.:2.000  
-##  Median :2.000   Median :2.000   Median :2.000   Median :2.000  
-##  Mean   :1.836   Mean   :1.945   Mean   :1.851   Mean   :1.884  
-##  3rd Qu.:2.000   3rd Qu.:2.000   3rd Qu.:2.000   3rd Qu.:2.000  
-##  Max.   :9.000   Max.   :9.000   Max.   :9.000   Max.   :9.000  
-##                                                                 
-##     volunfp         clsprty         prtcleat        prtclebe    
-##  Min.   :1.000   Min.   :1.000   Min.   : 1.00   Min.   : 1.00  
-##  1st Qu.:2.000   1st Qu.:1.000   1st Qu.: 3.00   1st Qu.: 6.00  
-##  Median :2.000   Median :2.000   Median :66.00   Median :66.00  
-##  Mean   :1.833   Mean   :1.734   Mean   :41.31   Mean   :39.73  
-##  3rd Qu.:2.000   3rd Qu.:2.000   3rd Qu.:66.00   3rd Qu.:66.00  
-##  Max.   :9.000   Max.   :9.000   Max.   :88.00   Max.   :99.00  
-##                                  NAs    :47762   NAs    :48522  
-##     prtclfbg        prtclbhr        prtclccy        prtcliee    
-##  Min.   : 1.00   Min.   : 1.00   Min.   : 3.00   Min.   : 1.00  
-##  1st Qu.: 3.00   1st Qu.:19.00   1st Qu.: 8.00   1st Qu.: 3.00  
-##  Median :66.00   Median :66.00   Median :66.00   Median :66.00  
-##  Mean   :41.08   Mean   :48.95   Mean   :43.32   Mean   :38.67  
-##  3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:66.00  
-##  Max.   :88.00   Max.   :88.00   Max.   :88.00   Max.   :88.00  
-##  NAs    :47877   NAs    :48553   NAs    :49431   NAs    :48823  
-##     prtclgfi        prtclgfr        prtclgde        prtclegr    
-##  Min.   : 1.00   Min.   : 1.00   Min.   : 1.00   Min.   : 1.00  
-##  1st Qu.: 3.00   1st Qu.: 8.00   1st Qu.: 4.00   1st Qu.: 3.00  
-##  Median : 8.00   Median :66.00   Median :66.00   Median :66.00  
-##  Mean   :31.48   Mean   :43.66   Mean   :38.29   Mean   :43.03  
-##  3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:66.00  
-##  Max.   :99.00   Max.   :88.00   Max.   :88.00   Max.   :88.00  
-##  NAs    :48553   NAs    :48345   NAs    :47696   NAs    :47359  
-##     prtclihu        prtcleis        prtclfie        prtclfil    
-##  Min.   : 1.00   Min.   : 2.00   Min.   : 1.00   Min.   : 1.00  
-##  1st Qu.:10.00   1st Qu.: 8.00   1st Qu.: 4.00   1st Qu.: 5.00  
-##  Median :66.00   Median :66.00   Median :66.00   Median :66.00  
-##  Mean   :45.22   Mean   :44.77   Mean   :42.45   Mean   :42.82  
-##  3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:66.00  
-##  Max.   :99.00   Max.   :99.00   Max.   :88.00   Max.   :88.00  
-##  NAs    :47998   NAs    :49274   NAs    :48099   NAs    :49210  
-##     prtclfit        prtclblv        prtclclt        prtclbme    
-##  Min.   : 1.00   Min.   : 1.00   Min.   : 1.00   Min.   : 1.00  
-##  1st Qu.: 5.00   1st Qu.:66.00   1st Qu.:11.00   1st Qu.: 9.00  
-##  Median :66.00   Median :66.00   Median :66.00   Median :66.00  
-##  Mean   :49.44   Mean   :52.55   Mean   :49.64   Mean   :46.15  
-##  3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:66.00  
-##  Max.   :99.00   Max.   :88.00   Max.   :88.00   Max.   :88.00  
-##  NAs    :47251   NAs    :48864   NAs    :48751   NAs    :48507  
-##     prtclhnl        prtclcno        prtcljpl        prtclgpt    
-##  Min.   : 1.00   Min.   : 1.00   Min.   : 1.00   Min.   : 3.00  
-##  1st Qu.: 7.00   1st Qu.: 4.00   1st Qu.: 2.00   1st Qu.:19.00  
-##  Median :18.00   Median : 8.00   Median :66.00   Median :66.00  
-##  Mean   :36.44   Mean   :30.38   Mean   :42.71   Mean   :44.02  
-##  3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:66.00  
-##  Max.   :88.00   Max.   :88.00   Max.   :99.00   Max.   :88.00  
-##  NAs    :48421   NAs    :48779   NAs    :48674   NAs    :48743  
-##     prtclbrs        prtclesk        prtclgsi        prtclhes    
-##  Min.   : 1.00   Min.   : 1.00   Min.   : 1.00   Min.   : 1.00  
-##  1st Qu.:20.50   1st Qu.: 4.00   1st Qu.: 8.00   1st Qu.: 2.00  
-##  Median :66.00   Median :66.00   Median :66.00   Median :66.00  
-##  Mean   :52.98   Mean   :41.26   Mean   :48.13   Mean   :36.04  
-##  3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:66.00  
-##  Max.   :88.00   Max.   :88.00   Max.   :99.00   Max.   :88.00  
-##  NAs    :48553   NAs    :48674   NAs    :48868   NAs    :48272  
-##     prtclese        prtclhch        prtcleua        prtcldgb    
-##  Min.   : 1.00   Min.   : 1.00   Min.   : 1.00   Min.   : 1.0   
-##  1st Qu.: 5.00   1st Qu.: 3.00   1st Qu.:66.00   1st Qu.: 2.0   
-##  Median : 6.00   Median :66.00   Median :66.00   Median :66.0   
-##  Mean   :26.53   Mean   :35.28   Mean   :59.59   Mean   :39.6   
-##  3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:66.0   
-##  Max.   :88.00   Max.   :88.00   Max.   :88.00   Max.   :88.0   
-##  NAs    :48886   NAs    :48732   NAs    :47455   NAs    :48432  
-##     prtdgcl         lrscale         stflife           stfeco     
-##  Min.   :1.000   Min.   : 0.00   Min.   : 0.000   Min.   : 0.00  
-##  1st Qu.:2.000   1st Qu.: 4.00   1st Qu.: 6.000   1st Qu.: 3.00  
-##  Median :6.000   Median : 5.00   Median : 7.000   Median : 5.00  
-##  Mean   :4.503   Mean   :17.03   Mean   : 7.558   Mean   : 5.83  
-##  3rd Qu.:6.000   3rd Qu.: 8.00   3rd Qu.: 8.000   3rd Qu.: 6.00  
-##  Max.   :9.000   Max.   :99.00   Max.   :99.000   Max.   :99.00  
-##  NAs    :1594                                                    
-##      stfgov           stfdem           stfedu          stfhlth      
-##  Min.   : 0.000   Min.   : 0.000   Min.   : 0.000   Min.   : 0.000  
-##  1st Qu.: 2.000   1st Qu.: 3.000   1st Qu.: 4.000   1st Qu.: 3.000  
-##  Median : 4.000   Median : 5.000   Median : 5.000   Median : 5.000  
-##  Mean   : 6.477   Mean   : 7.782   Mean   : 9.003   Mean   : 5.772  
-##  3rd Qu.: 6.000   3rd Qu.: 7.000   3rd Qu.: 7.000   3rd Qu.: 7.000  
-##  Max.   :99.000   Max.   :99.000   Max.   :99.000   Max.   :99.000  
-##                                                                     
-##     gincdif        freehms         hmsfmlsh        hmsacld          euftf      
-##  Min.   :1.00   Min.   :1.000   Min.   :1.000   Min.   :1.000   Min.   : 0.00  
-##  1st Qu.:1.00   1st Qu.:1.000   1st Qu.:3.000   1st Qu.:2.000   1st Qu.: 4.00  
-##  Median :2.00   Median :2.000   Median :4.000   Median :3.000   Median : 6.00  
-##  Mean   :2.18   Mean   :2.301   Mean   :3.946   Mean   :3.063   Mean   :11.61  
-##  3rd Qu.:3.00   3rd Qu.:3.000   3rd Qu.:5.000   3rd Qu.:4.000   3rd Qu.: 8.00  
-##  Max.   :9.00   Max.   :9.000   Max.   :9.000   Max.   :9.000   Max.   :99.00  
-##                                                                                
-##     lrnobed         loylead         imsmetn         imdfetn     
-##  Min.   :1.000   Min.   :1.000   Min.   :1.000   Min.   :1.000  
-##  1st Qu.:2.000   1st Qu.:2.000   1st Qu.:1.000   1st Qu.:2.000  
-##  Median :2.000   Median :3.000   Median :2.000   Median :2.000  
-##  Mean   :2.486   Mean   :3.272   Mean   :2.172   Mean   :2.521  
-##  3rd Qu.:3.000   3rd Qu.:4.000   3rd Qu.:3.000   3rd Qu.:3.000  
-##  Max.   :9.000   Max.   :9.000   Max.   :9.000   Max.   :9.000  
-##                  NAs    :2661                                   
-##     impcntr         imbgeco         imueclt          imwbcnt      
-##  Min.   :1.000   Min.   : 0.00   Min.   : 0.000   Min.   : 0.000  
-##  1st Qu.:2.000   1st Qu.: 4.00   1st Qu.: 4.000   1st Qu.: 4.000  
-##  Median :2.000   Median : 5.00   Median : 5.000   Median : 5.000  
-##  Mean   :2.608   Mean   : 8.06   Mean   : 7.894   Mean   : 7.897  
-##  3rd Qu.:3.000   3rd Qu.: 7.00   3rd Qu.: 8.000   3rd Qu.: 7.000  
-##  Max.   :9.000   Max.   :99.00   Max.   :99.000   Max.   :99.000  
-##                                                                   
-##      happy           sclmeet          inprdsc           sclact     
-##  Min.   : 0.000   Min.   : 1.000   Min.   : 0.000   Min.   :1.000  
-##  1st Qu.: 6.000   1st Qu.: 4.000   1st Qu.: 2.000   1st Qu.:2.000  
-##  Median : 8.000   Median : 5.000   Median : 3.000   Median :3.000  
-##  Mean   : 7.652   Mean   : 4.976   Mean   : 3.194   Mean   :2.783  
-##  3rd Qu.: 9.000   3rd Qu.: 6.000   3rd Qu.: 4.000   3rd Qu.:3.000  
-##  Max.   :99.000   Max.   :99.000   Max.   :99.000   Max.   :9.000  
-##                                                                    
-##      crmvct         aesfdrk         health         hlthhmp     
-##  Min.   :1.000   Min.   :1.00   Min.   :1.000   Min.   :1.000  
-##  1st Qu.:2.000   1st Qu.:1.00   1st Qu.:2.000   1st Qu.:2.000  
-##  Median :2.000   Median :2.00   Median :2.000   Median :3.000  
-##  Mean   :1.916   Mean   :1.99   Mean   :2.197   Mean   :2.687  
-##  3rd Qu.:2.000   3rd Qu.:2.00   3rd Qu.:3.000   3rd Qu.:3.000  
-##  Max.   :9.000   Max.   :9.00   Max.   :9.000   Max.   :9.000  
-##                                                                
-##     atchctr          atcherp           rlgblg          rlgdnm     
-##  Min.   : 0.000   Min.   : 0.000   Min.   :1.000   Min.   : 1.00  
-##  1st Qu.: 7.000   1st Qu.: 4.000   1st Qu.:1.000   1st Qu.: 1.00  
-##  Median : 8.000   Median : 6.000   Median :1.000   Median : 3.00  
-##  Mean   : 8.281   Mean   : 7.107   Mean   :1.407   Mean   :25.91  
-##  3rd Qu.:10.000   3rd Qu.: 8.000   3rd Qu.:2.000   3rd Qu.:66.00  
-##  Max.   :99.000   Max.   :99.000   Max.   :9.000   Max.   :99.00  
-##                                                                   
-##     rlgdnbat        rlgdncy          rlgdnafi        rlgdnade    
-##  Min.   :   1    Min.   : 110.0   Min.   :   1    Min.   :   1   
-##  1st Qu.:   1    1st Qu.: 310.0   1st Qu.:   1    1st Qu.:   2   
-##  Median :   1    Median : 310.0   Median :6666    Median : 290   
-##  Mean   :2056    Mean   : 893.4   Mean   :3408    Mean   :3230   
-##  3rd Qu.:6666    3rd Qu.: 310.0   3rd Qu.:6666    3rd Qu.:6666   
-##  Max.   :9999    Max.   :7777.0   Max.   :6666    Max.   :7777   
-##  NAs    :47762   NAs    :49431    NAs    :48553   NAs    :47696  
-##     rlgdnagr        rlgdnhu         rlgdnais        rlgdnie     
-##  Min.   :   3    Min.   : 110    Min.   :   1    Min.   :   1   
-##  1st Qu.: 310    1st Qu.: 110    1st Qu.:   2    1st Qu.:   1   
-##  Median : 310    Median : 250    Median :6666    Median :   1   
-##  Mean   : 734    Mean   :2345    Mean   :3742    Mean   :1955   
-##  3rd Qu.: 310    3rd Qu.:6666    3rd Qu.:6666    3rd Qu.:6666   
-##  Max.   :7777    Max.   :9999    Max.   :7777    Max.   :9999   
-##  NAs    :47359   NAs    :47998   NAs    :49274   NAs    :48099  
-##     rlgdnlv         rlgdnlt          rlgdme         rlgdnanl    
-##  Min.   :   1    Min.   :   1    Min.   :   1    Min.   :   1   
-##  1st Qu.:   3    1st Qu.:   1    1st Qu.:   3    1st Qu.:  26   
-##  Median :6666    Median :   1    Median :   5    Median :6666   
-##  Mean   :3902    Mean   :1640    Mean   :1074    Mean   :4814   
-##  3rd Qu.:6666    3rd Qu.:   7    3rd Qu.:   8    3rd Qu.:6666   
-##  Max.   :7777    Max.   :9999    Max.   :9999    Max.   :9999   
-##  NAs    :48864   NAs    :48751   NAs    :48507   NAs    :48421  
-##     rlgdnno         rlgdnapl        rlgdnapt        rlgdnrs      
-##  Min.   :   1    Min.   : 100    Min.   :   1    Min.   :   1.0  
-##  1st Qu.:   1    1st Qu.: 110    1st Qu.:   1    1st Qu.:   3.0  
-##  Median :6666    Median : 110    Median :   1    Median :   3.0  
-##  Mean   :4121    Mean   :1376    Mean   :1788    Mean   : 797.4  
-##  3rd Qu.:6666    3rd Qu.: 110    3rd Qu.:6666    3rd Qu.:   3.0  
-##  Max.   :7777    Max.   :9999    Max.   :7777    Max.   :7777.0  
-##  NAs    :48779   NAs    :48674   NAs    :48743   NAs    :48553   
-##     rlgdnask          rlgdnase        rlgdnach        rlgdnaua    
-##  Min.   :   1.00   Min.   :   1    Min.   : 110    Min.   :   1   
-##  1st Qu.:   2.00   1st Qu.:   2    1st Qu.: 110    1st Qu.:   1   
-##  Median :   2.00   Median :6666    Median : 710    Median :   3   
-##  Mean   :1628.96   Mean   :4516    Mean   :3405    Mean   :2196   
-##  3rd Qu.:   5.75   3rd Qu.:6666    3rd Qu.:6666    3rd Qu.:6666   
-##  Max.   :7777.00   Max.   :7777    Max.   :7777    Max.   :7777   
-##  NAs    :48674     NAs    :48886   NAs    :48732   NAs    :47455  
-##     rlgdngb         rlgblge        rlgdnme         rlgdebat        rlgdecy     
-##  Min.   :   1    Min.   :1.00   Min.   : 1.00   Min.   :   1    Min.   : 310   
-##  1st Qu.:   2    1st Qu.:2.00   1st Qu.:66.00   1st Qu.:6666    1st Qu.:6666   
-##  Median :6666    Median :6.00   Median :66.00   Median :6666    Median :6666   
-##  Mean   :3937    Mean   :4.46   Mean   :59.47   Mean   :5633    Mean   :6427   
-##  3rd Qu.:6666    3rd Qu.:6.00   3rd Qu.:66.00   3rd Qu.:6666    3rd Qu.:6666   
-##  Max.   :9999    Max.   :9.00   Max.   :99.00   Max.   :7777    Max.   :7777   
-##  NAs    :48432                                  NAs    :47762   NAs    :49431  
-##     rlgdeafi        rlgdeade        rlgdeagr        rlgdehu     
-##  Min.   :   1    Min.   :   1    Min.   :   4    Min.   : 110   
-##  1st Qu.:6666    1st Qu.:6666    1st Qu.:6666    1st Qu.:6666   
-##  Median :6666    Median :6666    Median :6666    Median :6666   
-##  Mean   :5596    Mean   :5359    Mean   :6583    Mean   :6534   
-##  3rd Qu.:6666    3rd Qu.:6666    3rd Qu.:6666    3rd Qu.:6666   
-##  Max.   :6666    Max.   :6666    Max.   :7777    Max.   :6666   
-##  NAs    :48553   NAs    :47696   NAs    :47359   NAs    :47998  
-##     rlgdeais        rlgdeie         rlgdelv         rlgdelt     
-##  Min.   :   1    Min.   :   1    Min.   :   1    Min.   :   1   
-##  1st Qu.:6666    1st Qu.:6666    1st Qu.:6666    1st Qu.:6666   
-##  Median :6666    Median :6666    Median :6666    Median :6666   
-##  Mean   :5115    Mean   :5726    Mean   :6230    Mean   :6334   
-##  3rd Qu.:6666    3rd Qu.:6666    3rd Qu.:6666    3rd Qu.:6666   
-##  Max.   :6666    Max.   :6666    Max.   :6666    Max.   :6666   
-##  NAs    :49274   NAs    :48099   NAs    :48864   NAs    :48751  
-##     rlgdeme         rlgdeanl        rlgdeno         rlgdeapl    
-##  Min.   :   3    Min.   :   1    Min.   :   1    Min.   : 100   
-##  1st Qu.:6666    1st Qu.:  17    1st Qu.:6666    1st Qu.:6666   
-##  Median :6666    Median :6666    Median :6666    Median :6666   
-##  Mean   :6514    Mean   :4841    Mean   :5390    Mean   :6053   
-##  3rd Qu.:6666    3rd Qu.:6666    3rd Qu.:6666    3rd Qu.:6666   
-##  Max.   :9999    Max.   :9999    Max.   :6666    Max.   :9999   
-##  NAs    :48507   NAs    :48421   NAs    :48779   NAs    :48674  
-##     rlgdeapt        rlgders         rlgdeask        rlgdease    
-##  Min.   :   1    Min.   :   1    Min.   :   1    Min.   :   1   
-##  1st Qu.:6666    1st Qu.:6666    1st Qu.:6666    1st Qu.:6666   
-##  Median :6666    Median :6666    Median :6666    Median :6666   
-##  Mean   :5963    Mean   :6530    Mean   :6455    Mean   :5729   
-##  3rd Qu.:6666    3rd Qu.:6666    3rd Qu.:6666    3rd Qu.:6666   
-##  Max.   :7777    Max.   :6666    Max.   :7777    Max.   :6666   
-##  NAs    :48743   NAs    :48553   NAs    :48674   NAs    :48886  
-##     rlgdeach        rlgdeaua        rlgdegb          rlgdgr      
-##  Min.   : 110    Min.   :   1    Min.   :   1    Min.   : 0.000  
-##  1st Qu.:6666    1st Qu.:6666    1st Qu.:6666    1st Qu.: 2.000  
-##  Median :6666    Median :6666    Median :6666    Median : 5.000  
-##  Mean   :5327    Mean   :6380    Mean   :5784    Mean   : 5.338  
-##  3rd Qu.:6666    3rd Qu.:6666    3rd Qu.:6666    3rd Qu.: 7.000  
-##  Max.   :6666    Max.   :7777    Max.   :9999    Max.   :99.000  
-##  NAs    :48732   NAs    :47455   NAs    :48432                   
-##     rlgatnd            pray           dscrgrp         dscrrce       
-##  Min.   : 1.000   Min.   : 1.000   Min.   :1.000   Min.   :0.00000  
-##  1st Qu.: 4.000   1st Qu.: 2.000   1st Qu.:2.000   1st Qu.:0.00000  
-##  Median : 6.000   Median : 5.000   Median :2.000   Median :0.00000  
-##  Mean   : 5.839   Mean   : 5.978   Mean   :1.975   Mean   :0.01129  
-##  3rd Qu.: 7.000   3rd Qu.: 7.000   3rd Qu.:2.000   3rd Qu.:0.00000  
-##  Max.   :99.000   Max.   :99.000   Max.   :9.000   Max.   :1.00000  
-##                                                                     
-##     dscrntn           dscrrlg         dscrlng           dscretn       
-##  Min.   :0.00000   Min.   :0.000   Min.   :0.00000   Min.   :0.00000  
-##  1st Qu.:0.00000   1st Qu.:0.000   1st Qu.:0.00000   1st Qu.:0.00000  
-##  Median :0.00000   Median :0.000   Median :0.00000   Median :0.00000  
-##  Mean   :0.01864   Mean   :0.016   Mean   :0.00876   Mean   :0.01139  
-##  3rd Qu.:0.00000   3rd Qu.:0.000   3rd Qu.:0.00000   3rd Qu.:0.00000  
-##  Max.   :1.00000   Max.   :1.000   Max.   :1.00000   Max.   :1.00000  
-##                                                                       
-##     dscrage           dscrgnd           dscrsex           dscrdsb        
-##  Min.   :0.00000   Min.   :0.00000   Min.   :0.00000   Min.   :0.000000  
-##  1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.:0.000000  
-##  Median :0.00000   Median :0.00000   Median :0.00000   Median :0.000000  
-##  Mean   :0.01195   Mean   :0.01435   Mean   :0.00846   Mean   :0.006704  
-##  3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:0.000000  
-##  Max.   :1.00000   Max.   :1.00000   Max.   :1.00000   Max.   :1.000000  
-##                                                                          
-##     dscroth            dscrdk            dscrref             dscrnap      
-##  Min.   :0.00000   Min.   :0.000000   Min.   :0.0000000   Min.   :0.0000  
-##  1st Qu.:0.00000   1st Qu.:0.000000   1st Qu.:0.0000000   1st Qu.:1.0000  
-##  Median :0.00000   Median :0.000000   Median :0.0000000   Median :1.0000  
-##  Mean   :0.01505   Mean   :0.001277   Mean   :0.0007383   Mean   :0.9155  
-##  3rd Qu.:0.00000   3rd Qu.:0.000000   3rd Qu.:0.0000000   3rd Qu.:1.0000  
-##  Max.   :1.00000   Max.   :1.000000   Max.   :1.0000000   Max.   :1.0000  
-##                                                                           
-##      dscrna             ctzcntr         brncntr           cntbrthd    
-##  Min.   :0.0000000   Min.   :1.000   Min.   :1.000   Length   :50116  
-##  1st Qu.:0.0000000   1st Qu.:1.000   1st Qu.:1.000   N.unique :  199  
-##  Median :0.0000000   Median :1.000   Median :1.000   N.blank  :    0  
-##  Mean   :0.0002594   Mean   :1.056   Mean   :1.095   Min.nchar:    1  
-##  3rd Qu.:0.0000000   3rd Qu.:1.000   3rd Qu.:1.000   Max.nchar:    4  
-##  Max.   :1.0000000   Max.   :9.000   Max.   :9.000   NAs      :    3  
-##                                                                       
-##     livecnta         lnghom1           lnghom2         feethngr    
-##  Min.   :1934   Length   :50116   Length   :50116   Min.   :1.000  
-##  1st Qu.:6666   N.unique :  128   N.unique :  132   1st Qu.:1.000  
-##  Median :6666   N.blank  :    0   N.blank  :    0   Median :1.000  
-##  Mean   :6248   Min.nchar:    3   Min.nchar:    3   Mean   :1.171  
-##  3rd Qu.:6666   Max.nchar:    3   Max.nchar:    3   3rd Qu.:1.000  
-##  Max.   :9999                                       Max.   :9.000  
-##                                                                    
-##      facntr           fbrncntc         mocntr           mbrncntc    
-##  Min.   :1.000   Length   :50116   Min.   :1.000   Length   :50116  
-##  1st Qu.:1.000   N.unique :  199   1st Qu.:1.000   N.unique :  197  
-##  Median :1.000   N.blank  :    0   Median :1.000   N.blank  :    0  
-##  Mean   :1.165   Min.nchar:    1   Mean   :1.142   Min.nchar:    1  
-##  3rd Qu.:1.000   Max.nchar:    4   3rd Qu.:1.000   Max.nchar:    4  
-##  Max.   :9.000   NAs      :    1   Max.   :9.000                    
-##                                                                     
-##     ccnthum          ccrdprs          wrclmch         admrclc     
-##  Min.   : 1.000   Min.   : 0.000   Min.   :1.000   Min.   :1.000  
-##  1st Qu.: 3.000   1st Qu.: 5.000   1st Qu.:3.000   1st Qu.:1.000  
-##  Median : 3.000   Median : 6.000   Median :3.000   Median :2.000  
-##  Mean   : 6.174   Mean   : 8.268   Mean   :3.256   Mean   :2.039  
-##  3rd Qu.: 4.000   3rd Qu.: 8.000   3rd Qu.:4.000   3rd Qu.:3.000  
-##  Max.   :99.000   Max.   :99.000   Max.   :9.000   Max.   :9.000  
-##                                                                   
-##     testjc34        testjc35        testjc36        testjc37    
-##  Min.   : 0.00   Min.   : 0.00   Min.   : 0.00   Min.   :1.000  
-##  1st Qu.: 8.00   1st Qu.: 6.00   1st Qu.: 7.00   1st Qu.:4.000  
-##  Median :66.00   Median :66.00   Median :66.00   Median :6.000  
-##  Mean   :47.38   Mean   :46.86   Mean   :47.16   Mean   :5.027  
-##  3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:6.000  
-##  Max.   :99.00   Max.   :99.00   Max.   :99.00   Max.   :9.000  
-##                                                                 
-##     testjc38        testjc39        testjc40        testjc41       testjc42    
-##  Min.   :1.000   Min.   :1.000   Min.   :0.000   Min.   :0.00   Min.   :0.000  
-##  1st Qu.:4.000   1st Qu.:4.000   1st Qu.:3.000   1st Qu.:3.00   1st Qu.:3.000  
-##  Median :6.000   Median :6.000   Median :6.000   Median :6.00   Median :6.000  
-##  Mean   :5.186   Mean   :5.149   Mean   :4.869   Mean   :4.66   Mean   :4.739  
-##  3rd Qu.:6.000   3rd Qu.:6.000   3rd Qu.:6.000   3rd Qu.:6.00   3rd Qu.:6.000  
-##  Max.   :9.000   Max.   :9.000   Max.   :9.000   Max.   :9.00   Max.   :9.000  
-##                                                                                
-##     vteurmmb        vteubcmb        ctrlife          etfruit      
-##  Min.   : 1.00   Min.   : 1.0    Min.   : 0.000   Min.   : 1.000  
-##  1st Qu.: 1.00   1st Qu.: 1.0    1st Qu.: 6.000   1st Qu.: 2.000  
-##  Median : 1.00   Median : 2.0    Median : 8.000   Median : 3.000  
-##  Mean   :11.67   Mean   :14.9    Mean   : 7.766   Mean   : 3.507  
-##  3rd Qu.: 2.00   3rd Qu.: 2.0    3rd Qu.: 9.000   3rd Qu.: 4.000  
-##  Max.   :99.00   Max.   :99.0    Max.   :99.000   Max.   :99.000  
-##  NAs    :11986   NAs    :38130                                    
-##      eatveg           dosprt          cgtsmok         alcfreq      
-##  Min.   : 1.000   Min.   : 0.000   Min.   :1.000   Min.   : 1.000  
-##  1st Qu.: 2.000   1st Qu.: 1.000   1st Qu.:4.000   1st Qu.: 3.000  
-##  Median : 3.000   Median : 3.000   Median :5.000   Median : 5.000  
-##  Mean   : 3.435   Mean   : 4.503   Mean   :4.404   Mean   : 5.275  
-##  3rd Qu.: 4.000   3rd Qu.: 6.000   3rd Qu.:6.000   3rd Qu.: 7.000  
-##  Max.   :99.000   Max.   :99.000   Max.   :9.000   Max.   :99.000  
-##                                                    NAs    :28      
-##     alcwkdy          alcwknd          icgndra         alcbnge     
-##  Min.   :   0.0   Min.   :   0.0   Min.   :1.000   Min.   :1.000  
-##  1st Qu.:  11.9   1st Qu.:  20.8   1st Qu.:1.000   1st Qu.:3.000  
-##  Median :  32.8   Median :  58.0   Median :2.000   Median :5.000  
-##  Mean   :2298.8   Mean   :2310.9   Mean   :2.905   Mean   :4.479  
-##  3rd Qu.:6666.0   3rd Qu.:6666.0   3rd Qu.:6.000   3rd Qu.:6.000  
-##  Max.   :9999.0   Max.   :9999.0   Max.   :9.000   Max.   :9.000  
-##                                                                   
-##      height         weighta         dshltgp          dshltms      
-##  Min.   :106.0   Min.   : 30.0   Min.   :0.0000   Min.   :0.0000  
-##  1st Qu.:165.0   1st Qu.: 65.0   1st Qu.:0.0000   1st Qu.:0.0000  
-##  Median :170.0   Median : 75.0   Median :1.0000   Median :0.0000  
-##  Mean   :191.7   Mean   :119.2   Mean   :0.7107   Mean   :0.4262  
-##  3rd Qu.:178.0   3rd Qu.: 88.0   3rd Qu.:1.0000   3rd Qu.:1.0000  
-##  Max.   :999.0   Max.   :999.0   Max.   :1.0000   Max.   :1.0000  
-##                                                                   
-##     dshltnt          dshltref          dshltdk            dshltna         
-##  Min.   :0.0000   Min.   :0.00000   Min.   :0.000000   Min.   :0.0000000  
-##  1st Qu.:0.0000   1st Qu.:0.00000   1st Qu.:0.000000   1st Qu.:0.0000000  
-##  Median :0.0000   Median :0.00000   Median :0.000000   Median :0.0000000  
-##  Mean   :0.2028   Mean   :0.00413   Mean   :0.001836   Mean   :0.0001397  
-##  3rd Qu.:0.0000   3rd Qu.:0.00000   3rd Qu.:0.000000   3rd Qu.:0.0000000  
-##  Max.   :1.0000   Max.   :1.00000   Max.   :1.000000   Max.   :1.0000000  
-##                                                                           
-##     medtrun         medtrnp           medtrnt           medtroc        
-##  Min.   :1.000   Min.   :0.00000   Min.   :0.00000   Min.   :0.000000  
-##  1st Qu.:2.000   1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.:0.000000  
-##  Median :2.000   Median :0.00000   Median :0.00000   Median :0.000000  
-##  Mean   :1.894   Mean   :0.01682   Mean   :0.01119   Mean   :0.009119  
-##  3rd Qu.:2.000   3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:0.000000  
-##  Max.   :9.000   Max.   :1.00000   Max.   :1.00000   Max.   :1.000000  
-##                                                                        
-##     medtrnl          medtrwl           medtrnaa          medtroth      
-##  Min.   :0.0000   Min.   :0.00000   Min.   :0.00000   Min.   :0.00000  
-##  1st Qu.:0.0000   1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.:0.00000  
-##  Median :0.0000   Median :0.00000   Median :0.00000   Median :0.00000  
-##  Mean   :0.0186   Mean   :0.06495   Mean   :0.06327   Mean   :0.01074  
-##  3rd Qu.:0.0000   3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:0.00000  
-##  Max.   :1.0000   Max.   :1.00000   Max.   :1.00000   Max.   :1.00000  
-##                                                                        
-##     medtrnap         medtrref           medtrdk            medtrna         
-##  Min.   :0.0000   Min.   :0.000000   Min.   :0.000000   Min.   :0.0000000  
-##  1st Qu.:1.0000   1st Qu.:0.000000   1st Qu.:0.000000   1st Qu.:0.0000000  
-##  Median :1.0000   Median :0.000000   Median :0.000000   Median :0.0000000  
-##  Mean   :0.8494   Mean   :0.001157   Mean   :0.001018   Mean   :0.0002394  
-##  3rd Qu.:1.0000   3rd Qu.:0.000000   3rd Qu.:0.000000   3rd Qu.:0.0000000  
-##  Max.   :1.0000   Max.   :1.000000   Max.   :1.000000   Max.   :1.0000000  
-##                                                                            
-##     medtrnu         hlpfmly         hlpfmhr         trhltacu      
-##  Min.   :1.000   Min.   :1.000   Min.   : 1.00   Min.   :0.00000  
-##  1st Qu.:1.000   1st Qu.:1.000   1st Qu.: 4.00   1st Qu.:0.00000  
-##  Median :1.000   Median :2.000   Median :66.00   Median :0.00000  
-##  Mean   :2.189   Mean   :1.738   Mean   :48.05   Mean   :0.02404  
-##  3rd Qu.:2.000   3rd Qu.:2.000   3rd Qu.:66.00   3rd Qu.:0.00000  
-##  Max.   :9.000   Max.   :9.000   Max.   :99.00   Max.   :1.00000  
-##                                                                   
-##     trhltacp           trhltcm            trhltch          trhltos       
-##  Min.   :0.000000   Min.   :0.000000   Min.   :0.0000   Min.   :0.00000  
-##  1st Qu.:0.000000   1st Qu.:0.000000   1st Qu.:0.0000   1st Qu.:0.00000  
-##  Median :0.000000   Median :0.000000   Median :0.0000   Median :0.00000  
-##  Mean   :0.006325   Mean   :0.009498   Mean   :0.0253   Mean   :0.03895  
-##  3rd Qu.:0.000000   3rd Qu.:0.000000   3rd Qu.:0.0000   3rd Qu.:0.00000  
-##  Max.   :1.000000   Max.   :1.000000   Max.   :1.0000   Max.   :1.00000  
-##                                                                          
-##     trhltho           trhltht           trhlthy           trhltmt     
-##  Min.   :0.00000   Min.   :0.00000   Min.   :0.00000   Min.   :0.000  
-##  1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.:0.000  
-##  Median :0.00000   Median :0.00000   Median :0.00000   Median :0.000  
-##  Mean   :0.03027   Mean   :0.06102   Mean   :0.00435   Mean   :0.124  
-##  3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:0.000  
-##  Max.   :1.00000   Max.   :1.00000   Max.   :1.00000   Max.   :1.000  
-##                                                                       
-##     trhltpt          trhltre           trhltsh           trhltnt      
-##  Min.   :0.0000   Min.   :0.00000   Min.   :0.00000   Min.   :0.0000  
-##  1st Qu.:0.0000   1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.:0.0000  
-##  Median :0.0000   Median :0.00000   Median :0.00000   Median :1.0000  
-##  Mean   :0.1631   Mean   :0.01205   Mean   :0.01934   Mean   :0.6526  
-##  3rd Qu.:0.0000   3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:1.0000  
-##  Max.   :1.0000   Max.   :1.00000   Max.   :1.00000   Max.   :1.0000  
-##                                                                       
-##     trhltref          trhltdk           trhltna              fltdpr     
-##  Min.   :0.00000   Min.   :0.00000   Min.   :0.0000000   Min.   :1.000  
-##  1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.:0.0000000   1st Qu.:1.000  
-##  Median :0.00000   Median :0.00000   Median :0.0000000   Median :1.000  
-##  Mean   :0.00854   Mean   :0.00413   Mean   :0.0004988   Mean   :1.497  
-##  3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:0.0000000   3rd Qu.:2.000  
-##  Max.   :1.00000   Max.   :1.00000   Max.   :1.0000000   Max.   :9.000  
-##                                                                         
-##     flteeff          slprl           wrhpp           fltlnl     
-##  Min.   :1.000   Min.   :1.000   Min.   :1.000   Min.   :1.000  
-##  1st Qu.:1.000   1st Qu.:1.000   1st Qu.:2.000   1st Qu.:1.000  
-##  Median :2.000   Median :2.000   Median :3.000   Median :1.000  
-##  Mean   :1.739   Mean   :1.823   Mean   :2.916   Mean   :1.492  
-##  3rd Qu.:2.000   3rd Qu.:2.000   3rd Qu.:3.000   3rd Qu.:2.000  
-##  Max.   :9.000   Max.   :9.000   Max.   :9.000   Max.   :9.000  
-##                                                                 
-##      enjlf           fltsd           cldgng         hltprhc      
-##  Min.   :1.000   Min.   :1.000   Min.   :1.000   Min.   :0.0000  
-##  1st Qu.:2.000   1st Qu.:1.000   1st Qu.:1.000   1st Qu.:0.0000  
-##  Median :3.000   Median :2.000   Median :1.000   Median :0.0000  
-##  Mean   :2.887   Mean   :1.638   Mean   :1.613   Mean   :0.1168  
-##  3rd Qu.:3.000   3rd Qu.:2.000   3rd Qu.:2.000   3rd Qu.:0.0000  
-##  Max.   :9.000   Max.   :9.000   Max.   :9.000   Max.   :1.0000  
-##                                                                  
-##     hltprhb          hltprbp           hltpral          hltprbn      
-##  Min.   :0.0000   Min.   :0.00000   Min.   :0.0000   Min.   :0.0000  
-##  1st Qu.:0.0000   1st Qu.:0.00000   1st Qu.:0.0000   1st Qu.:0.0000  
-##  Median :0.0000   Median :0.00000   Median :0.0000   Median :0.0000  
-##  Mean   :0.2155   Mean   :0.07513   Mean   :0.1079   Mean   :0.3259  
-##  3rd Qu.:0.0000   3rd Qu.:0.00000   3rd Qu.:0.0000   3rd Qu.:1.0000  
-##  Max.   :1.0000   Max.   :1.00000   Max.   :1.0000   Max.   :1.0000  
-##                                                                      
-##     hltprpa          hltprpf          hltprsd          hltprsc       
-##  Min.   :0.0000   Min.   :0.0000   Min.   :0.0000   Min.   :0.00000  
-##  1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:0.00000  
-##  Median :0.0000   Median :0.0000   Median :0.0000   Median :0.00000  
-##  Mean   :0.1909   Mean   :0.2149   Mean   :0.1363   Mean   :0.07223  
-##  3rd Qu.:0.0000   3rd Qu.:0.0000   3rd Qu.:0.0000   3rd Qu.:0.00000  
-##  Max.   :1.0000   Max.   :1.0000   Max.   :1.0000   Max.   :1.00000  
-##                                                                      
-##     hltprsh          hltprdi           hltprnt          hltprref      
-##  Min.   :0.0000   Min.   :0.00000   Min.   :0.0000   Min.   :0.00000  
-##  1st Qu.:0.0000   1st Qu.:0.00000   1st Qu.:0.0000   1st Qu.:0.00000  
-##  Median :0.0000   Median :0.00000   Median :0.0000   Median :0.00000  
-##  Mean   :0.1137   Mean   :0.06353   Mean   :0.3232   Mean   :0.01145  
-##  3rd Qu.:0.0000   3rd Qu.:0.00000   3rd Qu.:1.0000   3rd Qu.:0.00000  
-##  Max.   :1.0000   Max.   :1.00000   Max.   :1.0000   Max.   :1.00000  
-##                                                                       
-##     hltprdk            hltprna             hltphhc           hltphhb       
-##  Min.   :0.000000   Min.   :0.0000000   Min.   :0.00000   Min.   :0.00000  
-##  1st Qu.:0.000000   1st Qu.:0.0000000   1st Qu.:0.00000   1st Qu.:0.00000  
-##  Median :0.000000   Median :0.0000000   Median :0.00000   Median :0.00000  
-##  Mean   :0.004929   Mean   :0.0001197   Mean   :0.05507   Mean   :0.06363  
-##  3rd Qu.:0.000000   3rd Qu.:0.0000000   3rd Qu.:0.00000   3rd Qu.:0.00000  
-##  Max.   :1.000000   Max.   :1.0000000   Max.   :1.00000   Max.   :1.00000  
-##                                                                            
-##     hltphbp           hltphal           hltphbn          hltphpa      
-##  Min.   :0.00000   Min.   :0.00000   Min.   :0.0000   Min.   :0.0000  
-##  1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.:0.0000   1st Qu.:0.0000  
-##  Median :0.00000   Median :0.00000   Median :0.0000   Median :0.0000  
-##  Mean   :0.03737   Mean   :0.02929   Mean   :0.1608   Mean   :0.0945  
-##  3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:0.0000   3rd Qu.:0.0000  
-##  Max.   :1.00000   Max.   :1.00000   Max.   :1.0000   Max.   :1.0000  
-##                                                                       
-##     hltphpf          hltphsd           hltphsc           hltphsh       
-##  Min.   :0.0000   Min.   :0.00000   Min.   :0.00000   Min.   :0.00000  
-##  1st Qu.:0.0000   1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.:0.00000  
-##  Median :0.0000   Median :0.00000   Median :0.00000   Median :0.00000  
-##  Mean   :0.1228   Mean   :0.04845   Mean   :0.01363   Mean   :0.05896  
-##  3rd Qu.:0.0000   3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:0.00000  
-##  Max.   :1.0000   Max.   :1.00000   Max.   :1.00000   Max.   :1.00000  
-##                                                                        
-##     hltphdi           hltphnt          hltphnap        hltphref        
-##  Min.   :0.00000   Min.   :0.0000   Min.   :0.000   Min.   :0.0000000  
-##  1st Qu.:0.00000   1st Qu.:0.0000   1st Qu.:0.000   1st Qu.:0.0000000  
-##  Median :0.00000   Median :0.0000   Median :0.000   Median :0.0000000  
-##  Mean   :0.02245   Mean   :0.2424   Mean   :0.339   Mean   :0.0009578  
-##  3rd Qu.:0.00000   3rd Qu.:0.0000   3rd Qu.:1.000   3rd Qu.:0.0000000  
-##  Max.   :1.00000   Max.   :1.0000   Max.   :1.000   Max.   :1.0000000  
-##                                                                        
-##     hltphdk            hltphna           hltprca         cancfre     
-##  Min.   :0.000000   Min.   :0.00000   Min.   :1.000   Min.   :1.000  
-##  1st Qu.:0.000000   1st Qu.:0.00000   1st Qu.:3.000   1st Qu.:6.000  
-##  Median :0.000000   Median :0.00000   Median :3.000   Median :6.000  
-##  Mean   :0.001077   Mean   :0.00842   Mean   :2.856   Mean   :5.763  
-##  3rd Qu.:0.000000   3rd Qu.:0.00000   3rd Qu.:3.000   3rd Qu.:6.000  
-##  Max.   :1.000000   Max.   :1.00000   Max.   :9.000   Max.   :9.000  
-##                                                                      
-##     cnfpplh         fnsdfml        jbexpvi          jbexpti      
-##  Min.   :1.000   Min.   :1.00   Min.   :0.0000   Min.   :0.0000  
-##  1st Qu.:3.000   1st Qu.:3.00   1st Qu.:0.0000   1st Qu.:0.0000  
-##  Median :4.000   Median :4.00   Median :0.0000   Median :0.0000  
-##  Mean   :3.872   Mean   :3.66   Mean   :0.1524   Mean   :0.2651  
-##  3rd Qu.:5.000   3rd Qu.:5.00   3rd Qu.:0.0000   3rd Qu.:1.0000  
-##  Max.   :9.000   Max.   :9.00   Max.   :1.0000   Max.   :1.0000  
-##                                                                  
-##     jbexpml           jbexpmc          jbexpnt          jbexpnap      
-##  Min.   :0.00000   Min.   :0.0000   Min.   :0.0000   Min.   :0.00000  
-##  1st Qu.:0.00000   1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:0.00000  
-##  Median :0.00000   Median :0.0000   Median :0.0000   Median :0.00000  
-##  Mean   :0.09239   Mean   :0.2585   Mean   :0.4498   Mean   :0.09851  
-##  3rd Qu.:0.00000   3rd Qu.:1.0000   3rd Qu.:1.0000   3rd Qu.:0.00000  
-##  Max.   :1.00000   Max.   :1.0000   Max.   :1.0000   Max.   :1.00000  
-##                                                                       
-##     jbexpref           jbexpdk            jbexpna            jbexevl      
-##  Min.   :0.000000   Min.   :0.000000   Min.   :0.000000   Min.   :0.0000  
-##  1st Qu.:0.000000   1st Qu.:0.000000   1st Qu.:0.000000   1st Qu.:0.0000  
-##  Median :0.000000   Median :0.000000   Median :0.000000   Median :0.0000  
-##  Mean   :0.003711   Mean   :0.002534   Mean   :0.002394   Mean   :0.2064  
-##  3rd Qu.:0.000000   3rd Qu.:0.000000   3rd Qu.:0.000000   3rd Qu.:0.0000  
-##  Max.   :1.000000   Max.   :1.000000   Max.   :1.000000   Max.   :1.0000  
-##                                                                           
-##     jbexevh          jbexevc          jbexera           jbexecp      
-##  Min.   :0.0000   Min.   :0.0000   Min.   :0.00000   Min.   :0.0000  
-##  1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:0.00000   1st Qu.:0.0000  
-##  Median :0.0000   Median :0.0000   Median :0.00000   Median :0.0000  
-##  Mean   :0.1718   Mean   :0.1217   Mean   :0.02438   Mean   :0.1126  
-##  3rd Qu.:0.0000   3rd Qu.:0.0000   3rd Qu.:0.00000   3rd Qu.:0.0000  
-##  Max.   :1.0000   Max.   :1.0000   Max.   :1.00000   Max.   :1.0000  
-##                                                                      
-##     jbexebs          jbexent          jbexenap          jbexeref       
-##  Min.   :0.0000   Min.   :0.0000   Min.   :0.00000   Min.   :0.000000  
-##  1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:0.00000   1st Qu.:0.000000  
-##  Median :0.0000   Median :1.0000   Median :0.00000   Median :0.000000  
-##  Mean   :0.1401   Mean   :0.5219   Mean   :0.09851   Mean   :0.003233  
-##  3rd Qu.:0.0000   3rd Qu.:1.0000   3rd Qu.:0.00000   3rd Qu.:0.000000  
-##  Max.   :1.0000   Max.   :1.0000   Max.   :1.00000   Max.   :1.000000  
-##                                                                        
-##     jbexedk            jbexena            nobingnd        likrisk     
-##  Min.   :0.000000   Min.   :0.000000   Min.   :1.000   Min.   :0.000  
-##  1st Qu.:0.000000   1st Qu.:0.000000   1st Qu.:1.000   1st Qu.:1.000  
-##  Median :0.000000   Median :0.000000   Median :2.000   Median :3.000  
-##  Mean   :0.002115   Mean   :0.003632   Mean   :1.562   Mean   :2.717  
-##  3rd Qu.:0.000000   3rd Qu.:0.000000   3rd Qu.:2.000   3rd Qu.:4.000  
-##  Max.   :1.000000   Max.   :1.000000   Max.   :9.000   Max.   :9.000  
-##                                                                       
-##     liklead         sothnds         actcomp         mascfel     
-##  Min.   :0.000   Min.   :0.000   Min.   :0.000   Min.   :0.000  
-##  1st Qu.:2.000   1st Qu.:4.000   1st Qu.:4.000   1st Qu.:0.000  
-##  Median :3.000   Median :5.000   Median :5.000   Median :3.000  
-##  Mean   :3.086   Mean   :4.481   Mean   :4.702   Mean   :3.007  
-##  3rd Qu.:4.000   3rd Qu.:5.000   3rd Qu.:6.000   3rd Qu.:6.000  
-##  Max.   :9.000   Max.   :9.000   Max.   :9.000   Max.   :9.000  
-##                                                                 
-##     femifel         impbemw          trmedmw         trwrkmw     
-##  Min.   :0.000   Min.   : 0.000   Min.   :1.000   Min.   :1.000  
-##  1st Qu.:0.000   1st Qu.: 4.000   1st Qu.:3.000   1st Qu.:3.000  
-##  Median :4.000   Median : 5.000   Median :3.000   Median :3.000  
-##  Mean   :3.092   Mean   : 7.074   Mean   :2.969   Mean   :2.938  
-##  3rd Qu.:6.000   3rd Qu.: 6.000   3rd Qu.:3.000   3rd Qu.:3.000  
-##  Max.   :9.000   Max.   :99.000   Max.   :9.000   Max.   :9.000  
-##                                                                  
-##     trplcmw         trmdcnt         trwkcnt        trplcnt        eqwrkbg    
-##  Min.   :1.000   Min.   :1.000   Min.   :1.00   Min.   :1.00   Min.   :0.00  
-##  1st Qu.:3.000   1st Qu.:3.000   1st Qu.:1.00   1st Qu.:3.00   1st Qu.:4.00  
-##  Median :3.000   Median :3.000   Median :2.00   Median :3.00   Median :5.00  
-##  Mean   :3.132   Mean   :2.927   Mean   :2.36   Mean   :3.28   Mean   :4.78  
-##  3rd Qu.:3.000   3rd Qu.:3.000   3rd Qu.:3.00   3rd Qu.:3.00   3rd Qu.:6.00  
-##  Max.   :9.000   Max.   :9.000   Max.   :9.00   Max.   :9.00   Max.   :9.00  
-##                                                                              
-##     eqpolbg         eqmgmbg         eqpaybg         eqparep     
-##  Min.   :0.000   Min.   :0.000   Min.   :0.000   Min.   :1.000  
-##  1st Qu.:4.000   1st Qu.:4.000   1st Qu.:4.000   1st Qu.:2.000  
-##  Median :5.000   Median :5.000   Median :6.000   Median :3.000  
-##  Mean   :4.805   Mean   :4.848   Mean   :5.201   Mean   :2.808  
-##  3rd Qu.:6.000   3rd Qu.:6.000   3rd Qu.:6.000   3rd Qu.:3.000  
-##  Max.   :9.000   Max.   :9.000   Max.   :9.000   Max.   :9.000  
-##                                                                 
-##     eqparlv         freinsw         fineqpy        wsekpwr         weasoff     
-##  Min.   :1.000   Min.   :1.000   Min.   :1.00   Min.   :1.000   Min.   :1.000  
-##  1st Qu.:1.000   1st Qu.:1.000   1st Qu.:1.00   1st Qu.:2.000   1st Qu.:3.000  
-##  Median :2.000   Median :2.000   Median :2.00   Median :3.000   Median :3.000  
-##  Mean   :2.708   Mean   :2.345   Mean   :2.32   Mean   :3.293   Mean   :3.379  
-##  3rd Qu.:4.000   3rd Qu.:3.000   3rd Qu.:3.00   3rd Qu.:4.000   3rd Qu.:4.000  
-##  Max.   :9.000   Max.   :9.000   Max.   :9.00   Max.   :9.000   Max.   :9.000  
-##                                                                                
-##     wlespdm         wexashr         wprtbym         wbrgwrm     
-##  Min.   :1.000   Min.   :1.000   Min.   :1.000   Min.   :1.000  
-##  1st Qu.:3.000   1st Qu.:2.000   1st Qu.:2.000   1st Qu.:2.000  
-##  Median :4.000   Median :3.000   Median :2.000   Median :3.000  
-##  Mean   :3.758   Mean   :3.278   Mean   :2.523   Mean   :2.807  
-##  3rd Qu.:4.000   3rd Qu.:3.000   3rd Qu.:3.000   3rd Qu.:3.000  
-##  Max.   :9.000   Max.   :9.000   Max.   :9.000   Max.   :9.000  
-##                                                                 
-##      hhmmb             gndr           gndr2           gndr3     
-##  Min.   : 0.000   Min.   :1.000   Min.   :1.000   Min.   :1.00  
-##  1st Qu.: 2.000   1st Qu.:1.000   1st Qu.:1.000   1st Qu.:2.00  
-##  Median : 2.000   Median :2.000   Median :2.000   Median :6.00  
-##  Mean   : 3.042   Mean   :1.539   Mean   :2.572   Mean   :4.21  
-##  3rd Qu.: 3.000   3rd Qu.:2.000   3rd Qu.:2.000   3rd Qu.:6.00  
-##  Max.   :99.000   Max.   :2.000   Max.   :9.000   Max.   :9.00  
-##                                                                 
-##      gndr4           gndr5           gndr6           gndr7      
-##  Min.   :1.000   Min.   :1.000   Min.   :1.000   Min.   :1.000  
-##  1st Qu.:6.000   1st Qu.:6.000   1st Qu.:6.000   1st Qu.:6.000  
-##  Median :6.000   Median :6.000   Median :6.000   Median :6.000  
-##  Mean   :4.992   Mean   :5.663   Mean   :5.906   Mean   :5.983  
-##  3rd Qu.:6.000   3rd Qu.:6.000   3rd Qu.:6.000   3rd Qu.:6.000  
-##  Max.   :9.000   Max.   :9.000   Max.   :9.000   Max.   :9.000  
-##                                                  NAs    :4104   
-##      gndr8           gndr9           gndr10          gndr11     
-##  Min.   :1.000   Min.   :1.000   Min.   :1.000   Min.   :1.00   
-##  1st Qu.:6.000   1st Qu.:6.000   1st Qu.:6.000   1st Qu.:6.00   
-##  Median :6.000   Median :6.000   Median :6.000   Median :6.00   
-##  Mean   :6.005   Mean   :6.015   Mean   :6.027   Mean   :6.04   
-##  3rd Qu.:6.000   3rd Qu.:6.000   3rd Qu.:6.000   3rd Qu.:6.00   
-##  Max.   :9.000   Max.   :9.000   Max.   :9.000   Max.   :9.00   
-##  NAs    :15684   NAs    :26683   NAs    :32360   NAs    :41407  
-##      gndr12          gndr13          yrbrn           agea       
-##  Min.   :1.000   Min.   :2.000   Min.   :1933   Min.   : 15.00  
-##  1st Qu.:6.000   1st Qu.:6.000   1st Qu.:1957   1st Qu.: 37.00  
-##  Median :6.000   Median :6.000   Median :1971   Median : 53.00  
-##  Mean   :6.046   Mean   :6.102   Mean   :2019   Mean   : 59.02  
-##  3rd Qu.:6.000   3rd Qu.:6.000   3rd Qu.:1987   3rd Qu.: 67.00  
-##  Max.   :9.000   Max.   :9.000   Max.   :9999   Max.   :999.00  
-##  NAs    :42849   NAs    :47917                                  
-##     agegroup         yrbrn2         yrbrn3         yrbrn4         yrbrn5    
-##  Min.   : 1.00   Min.   :1933   Min.   :1933   Min.   :1933   Min.   :1933  
-##  1st Qu.: 3.00   1st Qu.:1963   1st Qu.:2008   1st Qu.:6666   1st Qu.:6666  
-##  Median : 4.00   Median :1979   Median :6666   Median :6666   Median :6666  
-##  Mean   : 4.93   Mean   :3236   Mean   :4904   Mean   :5691   Mean   :6369  
-##  3rd Qu.: 6.00   3rd Qu.:6666   3rd Qu.:6666   3rd Qu.:6666   3rd Qu.:6666  
-##  Max.   :99.00   Max.   :9999   Max.   :9999   Max.   :9999   Max.   :9999  
-##                                                                             
-##      yrbrn6         yrbrn7         yrbrn8          yrbrn9         yrbrn10     
-##  Min.   :1933   Min.   :1933   Min.   :1939    Min.   :1947    Min.   :1953   
-##  1st Qu.:6666   1st Qu.:6666   1st Qu.:6666    1st Qu.:6666    1st Qu.:6666   
-##  Median :6666   Median :6666   Median :6666    Median :6666    Median :6666   
-##  Mean   :6612   Mean   :6689   Mean   :6722    Mean   :6755    Mean   :6788   
-##  3rd Qu.:6666   3rd Qu.:6666   3rd Qu.:6666    3rd Qu.:6666    3rd Qu.:6666   
-##  Max.   :9999   Max.   :9999   Max.   :9999    Max.   :9999    Max.   :9999   
-##                 NAs    :4104   NAs    :15684   NAs    :26683   NAs    :32360  
-##     yrbrn11         yrbrn12         yrbrn13         rshipa2     
-##  Min.   :1984    Min.   :2011    Min.   :2021    Min.   : 1.00  
-##  1st Qu.:6666    1st Qu.:6666    1st Qu.:6666    1st Qu.: 1.00  
-##  Median :6666    Median :6666    Median :6666    Median : 1.00  
-##  Mean   :6714    Mean   :6722    Mean   :6775    Mean   :17.26  
-##  3rd Qu.:6666    3rd Qu.:6666    3rd Qu.:6666    3rd Qu.: 5.00  
-##  Max.   :9999    Max.   :9999    Max.   :9999    Max.   :99.00  
-##  NAs    :41407   NAs    :42849   NAs    :47917                  
-##     rshipa3         rshipa4         rshipa5         rshipa6     
-##  Min.   : 1.00   Min.   : 1.00   Min.   : 1.00   Min.   : 1.00  
-##  1st Qu.: 2.00   1st Qu.:66.00   1st Qu.:66.00   1st Qu.:66.00  
-##  Median :66.00   Median :66.00   Median :66.00   Median :66.00  
-##  Mean   :40.64   Mean   :51.87   Mean   :61.26   Mean   :64.66  
-##  3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:66.00  
-##  Max.   :99.00   Max.   :99.00   Max.   :99.00   Max.   :99.00  
-##                                                                 
-##     rshipa7         rshipa8         rshipa9         rshipa10    
-##  Min.   : 1.00   Min.   : 2      Min.   : 2.00   Min.   : 2.00  
-##  1st Qu.:66.00   1st Qu.:66      1st Qu.:66.00   1st Qu.:66.00  
-##  Median :66.00   Median :66      Median :66.00   Median :66.00  
-##  Mean   :65.71   Mean   :66      Mean   :66.14   Mean   :66.28  
-##  3rd Qu.:66.00   3rd Qu.:66      3rd Qu.:66.00   3rd Qu.:66.00  
-##  Max.   :99.00   Max.   :99      Max.   :99.00   Max.   :99.00  
-##  NAs    :4104    NAs    :15684   NAs    :26683   NAs    :32360  
-##     rshipa11        rshipa12        rshipa13        rshipa15    
-##  Min.   : 2.00   Min.   : 2.00   Min.   : 2.00   Min.   :4      
-##  1st Qu.:66.00   1st Qu.:66.00   1st Qu.:66.00   1st Qu.:4      
-##  Median :66.00   Median :66.00   Median :66.00   Median :4      
-##  Mean   :66.45   Mean   :66.51   Mean   :67.11   Mean   :4      
-##  3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:4      
-##  Max.   :99.00   Max.   :99.00   Max.   :99.00   Max.   :4      
-##  NAs    :41407   NAs    :42849   NAs    :47917   NAs    :50115  
-##     rshpsts         rshpsgb         lvgptnea        dvrcdeva    
-##  Min.   : 1.00   Min.   : 1.00   Min.   :1.000   Min.   :1.000  
-##  1st Qu.: 1.00   1st Qu.:99.00   1st Qu.:1.000   1st Qu.:2.000  
-##  Median : 3.00   Median :99.00   Median :2.000   Median :2.000  
-##  Mean   :29.19   Mean   :95.22   Mean   :2.337   Mean   :1.867  
-##  3rd Qu.:66.00   3rd Qu.:99.00   3rd Qu.:2.000   3rd Qu.:2.000  
-##  Max.   :99.00   Max.   :99.00   Max.   :9.000   Max.   :9.000  
-##                  NAs    :29484                                  
-##      marsts         marstgb         maritalb         chldhhe     
-##  Min.   : 1.00   Min.   : 1.00   Min.   : 1.000   Min.   :1.000  
-##  1st Qu.: 6.00   1st Qu.:99.00   1st Qu.: 1.000   1st Qu.:1.000  
-##  Median : 6.00   Median :99.00   Median : 3.000   Median :2.000  
-##  Mean   :35.02   Mean   :88.43   Mean   : 4.557   Mean   :2.994  
-##  3rd Qu.:66.00   3rd Qu.:99.00   3rd Qu.: 6.000   3rd Qu.:6.000  
-##  Max.   :99.00   Max.   :99.00   Max.   :99.000   Max.   :9.000  
-##                  NAs    :41305                                   
-##     domicil         paccmoro          paccdwlr          pacclift      
-##  Min.   :1.000   Min.   :0.00000   Min.   :0.00000   Min.   :0.00000  
-##  1st Qu.:2.000   1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.:0.00000  
-##  Median :3.000   Median :0.00000   Median :0.00000   Median :0.00000  
-##  Mean   :2.883   Mean   :0.05038   Mean   :0.05751   Mean   :0.01327  
-##  3rd Qu.:4.000   3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:0.00000  
-##  Max.   :9.000   Max.   :1.00000   Max.   :1.00000   Max.   :1.00000  
-##                                                                       
-##     paccnbsh          paccocrw          paccxhoc          paccnois      
-##  Min.   :0.00000   Min.   :0.00000   Min.   :0.00000   Min.   :0.00000  
-##  1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.:0.00000  
-##  Median :0.00000   Median :0.00000   Median :0.00000   Median :0.00000  
-##  Mean   :0.01351   Mean   :0.01512   Mean   :0.03817   Mean   :0.04619  
-##  3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:0.00000  
-##  Max.   :1.00000   Max.   :1.00000   Max.   :1.00000   Max.   :1.00000  
-##                                                                         
-##     paccinro           paccnt         paccref            paccdk        
-##  Min.   :0.00000   Min.   :0.000   Min.   :0.00000   Min.   :0.000000  
-##  1st Qu.:0.00000   1st Qu.:1.000   1st Qu.:0.00000   1st Qu.:0.000000  
-##  Median :0.00000   Median :1.000   Median :0.00000   Median :0.000000  
-##  Mean   :0.04306   Mean   :0.788   Mean   :0.01131   Mean   :0.007104  
-##  3rd Qu.:0.00000   3rd Qu.:1.000   3rd Qu.:0.00000   3rd Qu.:0.000000  
-##  Max.   :1.00000   Max.   :1.000   Max.   :1.00000   Max.   :1.000000  
-##                                                                        
-##      paccna            edulvlb           eisced          edlveat       
-##  Min.   :0.000000   Min.   :   0.0   Min.   : 1.000   Min.   :   1.00  
-##  1st Qu.:0.000000   1st Qu.: 313.0   1st Qu.: 3.000   1st Qu.:   6.00  
-##  Median :0.000000   Median : 323.0   Median : 4.000   Median :   6.00  
-##  Mean   :0.001177   Mean   : 457.7   Mean   : 4.702   Mean   :  60.46  
-##  3rd Qu.:0.000000   3rd Qu.: 610.0   3rd Qu.: 6.000   3rd Qu.:  10.00  
-##  Max.   :1.000000   Max.   :9999.0   Max.   :99.000   Max.   :7777.00  
-##                                                       NAs    :47762    
-##     edlvebe          edlvebg           edlvehr           edlvgcy      
-##  Min.   :   1.0   Min.   :   2.00   Min.   :   1.00   Min.   :   0.0  
-##  1st Qu.:   6.0   1st Qu.:   7.00   1st Qu.:   5.00   1st Qu.: 213.0  
-##  Median :   9.0   Median :   9.00   Median :   6.00   Median : 313.0  
-##  Mean   : 106.3   Mean   :  16.36   Mean   :  17.57   Mean   : 590.1  
-##  3rd Qu.:  12.0   3rd Qu.:  12.00   3rd Qu.:   7.00   3rd Qu.: 620.0  
-##  Max.   :9999.0   Max.   :8888.00   Max.   :8888.00   Max.   :9999.0  
-##  NAs    :48522    NAs    :47877     NAs    :48553     NAs    :49431   
-##     edlvdee          edlvdfi           edlvdfr           edudde1       
-##  Min.   : 113.0   Min.   :   1.00   Min.   :   1.00   Min.   :   1.00  
-##  1st Qu.: 313.0   1st Qu.:   5.00   1st Qu.:   7.00   1st Qu.:   3.00  
-##  Median : 423.0   Median :   7.00   Median :  11.00   Median :   3.00  
-##  Mean   : 475.1   Mean   :  16.36   Mean   :  40.05   Mean   :  37.95  
-##  3rd Qu.: 620.0   3rd Qu.:  10.00   3rd Qu.:  17.00   3rd Qu.:   5.00  
-##  Max.   :8888.0   Max.   :8888.00   Max.   :8888.00   Max.   :8888.00  
-##  NAs    :48823    NAs    :48553     NAs    :48345     NAs    :47696    
-##     educde2           edlvegr           edlvdahu          edlvdis       
-##  Min.   :   0.00   Min.   :   1.00   Min.   :   1.00   Min.   :   1.00  
-##  1st Qu.:   5.00   1st Qu.:   5.00   1st Qu.:   4.00   1st Qu.:   6.00  
-##  Median :   8.00   Median :   5.00   Median :   6.00   Median :  11.00  
-##  Mean   :  53.11   Mean   :  10.07   Mean   :  16.78   Mean   :  74.47  
-##  3rd Qu.:  13.00   3rd Qu.:   9.00   3rd Qu.:   7.00   3rd Qu.:  13.75  
-##  Max.   :8888.00   Max.   :5555.00   Max.   :7777.00   Max.   :8888.00  
-##  NAs    :47696     NAs    :47359     NAs    :47998     NAs    :49274    
-##     edlvdie           edubil1          eduail2         edlvfit       
-##  Min.   :   1.00   Min.   :   1.0   Min.   :  10    Min.   :   1.00  
-##  1st Qu.:   4.00   1st Qu.:   5.0   1st Qu.:6666    1st Qu.:   4.00  
-##  Median :   8.00   Median :   8.0   Median :6666    Median :   8.00  
-##  Mean   :  44.24   Mean   : 174.1   Mean   :6659    Mean   :  72.17  
-##  3rd Qu.:  14.00   3rd Qu.:  13.0   3rd Qu.:6666    3rd Qu.:   9.00  
-##  Max.   :8888.00   Max.   :8888.0   Max.   :6666    Max.   :9999.00  
-##  NAs    :48099     NAs    :49210    NAs    :49210   NAs    :47251    
-##     edlvelv         edlvdlt           edlveme           edlvenl       
-##  Min.   :   2    Min.   :   0.00   Min.   :   0.00   Min.   :   1.00  
-##  1st Qu.:   7    1st Qu.:   7.00   1st Qu.:   4.00   1st Qu.:   5.00  
-##  Median :  11    Median :   9.00   Median :   6.00   Median :  10.00  
-##  Mean   : 104    Mean   :  23.98   Mean   :  90.28   Mean   :  48.15  
-##  3rd Qu.:  16    3rd Qu.:  13.00   3rd Qu.:   6.00   3rd Qu.:  15.00  
-##  Max.   :8888    Max.   :8888.00   Max.   :7777.00   Max.   :8888.00  
-##  NAs    :48864   NAs    :48751     NAs    :48507     NAs    :48421    
-##     edlveno           edlvipl           edlvept          edlvdrs       
-##  Min.   :   1.00   Min.   :   1.00   Min.   : 1.000   Min.   :   1.00  
-##  1st Qu.:   5.00   1st Qu.:   5.00   1st Qu.: 2.000   1st Qu.:   7.00  
-##  Median :   7.00   Median :   9.00   Median : 8.000   Median :   9.00  
-##  Mean   :  21.05   Mean   :  41.01   Mean   : 7.163   Mean   :  59.85  
-##  3rd Qu.:   9.00   3rd Qu.:  12.00   3rd Qu.:10.000   3rd Qu.:  12.00  
-##  Max.   :9999.00   Max.   :9999.00   Max.   :17.000   Max.   :8888.00  
-##  NAs    :48779     NAs    :48674     NAs    :48743    NAs    :48553    
-##     edlvdsk           edlvesi           edlvies           edlvdse       
-##  Min.   :   1.00   Min.   :   0.00   Min.   :   1.00   Min.   :   1.00  
-##  1st Qu.:   6.00   1st Qu.:   3.00   1st Qu.:   8.00   1st Qu.:   5.00  
-##  Median :   7.00   Median :   4.00   Median :  12.00   Median :  10.00  
-##  Mean   :  84.21   Mean   :  56.36   Mean   :  42.11   Mean   :  93.83  
-##  3rd Qu.:   7.00   3rd Qu.:   7.00   3rd Qu.:  25.00   3rd Qu.:  14.00  
-##  Max.   :9999.00   Max.   :9999.00   Max.   :8888.00   Max.   :8888.00  
-##  NAs    :48674     NAs    :48868     NAs    :48272     NAs    :48886    
-##     edlvdch           edlvdua           educgb1          edubgb2      
-##  Min.   :   1.00   Min.   :   0.00   Min.   :   1.0   Min.   :   1.0  
-##  1st Qu.:  11.00   1st Qu.:   4.00   1st Qu.:   1.0   1st Qu.:   4.0  
-##  Median :  12.00   Median :   8.00   Median :   4.0   Median :   9.0  
-##  Mean   :  38.63   Mean   :  62.97   Mean   : 147.4   Mean   : 176.2  
-##  3rd Qu.:  17.00   3rd Qu.:  10.00   3rd Qu.:   7.0   3rd Qu.:  11.0  
-##  Max.   :8888.00   Max.   :8888.00   Max.   :8888.0   Max.   :8888.0  
-##  NAs    :48732     NAs    :47455     NAs    :48432    NAs    :48432   
-##     edagegb           eduyrs          pdwrk            edctn        
-##  Min.   :  10.0   Min.   : 0.00   Min.   :0.0000   Min.   :0.00000  
-##  1st Qu.:  16.0   1st Qu.:11.00   1st Qu.:0.0000   1st Qu.:0.00000  
-##  Median :  18.0   Median :13.00   Median :1.0000   Median :0.00000  
-##  Mean   : 195.7   Mean   :14.54   Mean   :0.5332   Mean   :0.07682  
-##  3rd Qu.:  22.0   3rd Qu.:16.00   3rd Qu.:1.0000   3rd Qu.:0.00000  
-##  Max.   :8888.0   Max.   :99.00   Max.   :1.0000   Max.   :1.00000  
-##  NAs    :48432                                                      
-##      uempla            uempli            dsbld              rtrd       
-##  Min.   :0.00000   Min.   :0.00000   Min.   :0.00000   Min.   :0.0000  
-##  1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.:0.0000  
-##  Median :0.00000   Median :0.00000   Median :0.00000   Median :0.0000  
-##  Mean   :0.03145   Mean   :0.02133   Mean   :0.02664   Mean   :0.2863  
-##  3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:1.0000  
-##  Max.   :1.00000   Max.   :1.00000   Max.   :1.00000   Max.   :1.0000  
-##                                                                        
-##      cmsrv              hswrk            dngoth            dngref        
-##  Min.   :0.000000   Min.   :0.0000   Min.   :0.00000   Min.   :0.000000  
-##  1st Qu.:0.000000   1st Qu.:0.0000   1st Qu.:0.00000   1st Qu.:0.000000  
-##  Median :0.000000   Median :0.0000   Median :0.00000   Median :0.000000  
-##  Mean   :0.001536   Mean   :0.1106   Mean   :0.01423   Mean   :0.002534  
-##  3rd Qu.:0.000000   3rd Qu.:0.0000   3rd Qu.:0.00000   3rd Qu.:0.000000  
-##  Max.   :1.000000   Max.   :1.0000   Max.   :1.00000   Max.   :1.000000  
-##                                                                          
-##      dngdk               dngna             mainact         mnactic      
-##  Min.   :0.0000000   Min.   :0.000000   Min.   : 1.00   Min.   : 1.000  
-##  1st Qu.:0.0000000   1st Qu.:0.000000   1st Qu.:66.00   1st Qu.: 1.000  
-##  Median :0.0000000   Median :0.000000   Median :66.00   Median : 1.000  
-##  Mean   :0.0005986   Mean   :0.001596   Mean   :58.15   Mean   : 3.659  
-##  3rd Qu.:0.0000000   3rd Qu.:0.000000   3rd Qu.:66.00   3rd Qu.: 6.000  
-##  Max.   :1.0000000   Max.   :1.000000   Max.   :99.00   Max.   :99.000  
-##                                                                         
-##      crpdwk         pdjobev         pdjobyr        emplrel          emplno     
-##  Min.   :1.000   Min.   :1.000   Min.   :1933   Min.   :1.000   Min.   :    0  
-##  1st Qu.:2.000   1st Qu.:1.000   1st Qu.:2021   1st Qu.:1.000   1st Qu.:66666  
-##  Median :6.000   Median :6.000   Median :6666   Median :1.000   Median :66666  
-##  Mean   :4.121   Mean   :3.909   Mean   :5203   Mean   :1.681   Mean   :59871  
-##  3rd Qu.:6.000   3rd Qu.:6.000   3rd Qu.:6666   3rd Qu.:1.000   3rd Qu.:66666  
-##  Max.   :9.000   Max.   :9.000   Max.   :9999   Max.   :9.000   Max.   :99999  
-##                                                                                
-##     wrkctra          estsz           jbspv           njbspv     
-##  Min.   :1.000   Min.   :1.000   Min.   :1.000   Min.   :    0  
-##  1st Qu.:1.000   1st Qu.:1.000   1st Qu.:1.000   1st Qu.:66666  
-##  Median :1.000   Median :3.000   Median :2.000   Median :66666  
-##  Mean   :2.292   Mean   :2.956   Mean   :2.178   Mean   :50246  
-##  3rd Qu.:3.000   3rd Qu.:4.000   3rd Qu.:2.000   3rd Qu.:66666  
-##  Max.   :9.000   Max.   :9.000   Max.   :9.000   Max.   :99999  
-##                                                                 
-##     wkdcorga        iorgact          wkhct           wkhtot     
-##  Min.   : 0.00   Min.   : 0.00   Min.   :  0.0   Min.   :  0.0  
-##  1st Qu.: 4.00   1st Qu.: 1.00   1st Qu.: 38.0   1st Qu.: 38.0  
-##  Median : 8.00   Median : 5.00   Median : 40.0   Median : 40.0  
-##  Mean   :12.89   Mean   :11.55   Mean   :163.2   Mean   :145.2  
-##  3rd Qu.:10.00   3rd Qu.: 9.00   3rd Qu.: 48.0   3rd Qu.: 50.0  
-##  Max.   :99.00   Max.   :99.00   Max.   :999.0   Max.   :999.0  
-##                                                                 
-##      nacer2         tporgwk          isco08         wrkac6m     
-##  Min.   :  1.0   Min.   : 1.00   Min.   :    0   Min.   :1.000  
-##  1st Qu.: 45.0   1st Qu.: 3.00   1st Qu.: 2641   1st Qu.:2.000  
-##  Median : 64.0   Median : 4.00   Median : 5221   Median :2.000  
-##  Mean   :149.3   Mean   :10.39   Mean   :13001   Mean   :2.354  
-##  3rd Qu.: 86.0   3rd Qu.: 4.00   3rd Qu.: 8189   3rd Qu.:2.000  
-##  Max.   :999.0   Max.   :99.00   Max.   :99999   Max.   :9.000  
-##                                                                 
-##      uemp3m         uemp12m         uemp5yr          mbtru      
-##  Min.   :1.000   Min.   :1.000   Min.   :1.000   Min.   :1.000  
-##  1st Qu.:1.000   1st Qu.:2.000   1st Qu.:2.000   1st Qu.:2.000  
-##  Median :2.000   Median :6.000   Median :6.000   Median :3.000  
-##  Mean   :1.782   Mean   :4.833   Mean   :4.836   Mean   :2.552  
-##  3rd Qu.:2.000   3rd Qu.:6.000   3rd Qu.:6.000   3rd Qu.:3.000  
-##  Max.   :9.000   Max.   :9.000   Max.   :9.000   Max.   :9.000  
-##                                                                 
-##     hincsrca         hinctnta     hincfel         edulvlpb       eiscedp     
-##  Min.   : 1.000   Min.   : 1   Min.   :1.000   Min.   :   0   Min.   : 1.00  
-##  1st Qu.: 1.000   1st Qu.: 4   1st Qu.:1.000   1st Qu.: 322   1st Qu.: 4.00  
-##  Median : 1.000   Median : 7   Median :2.000   Median : 720   Median : 7.00  
-##  Mean   : 3.514   Mean   :21   Mean   :2.064   Mean   :3185   Mean   :31.63  
-##  3rd Qu.: 4.000   3rd Qu.:10   3rd Qu.:2.000   3rd Qu.:6666   3rd Qu.:66.00  
-##  Max.   :99.000   Max.   :99   Max.   :9.000   Max.   :9999   Max.   :99.00  
-##                                                                              
-##     edlvpfat        edlvpebe        edlvpebg        edlvpehr    
-##  Min.   :   1    Min.   :   1    Min.   :   1    Min.   :   1   
-##  1st Qu.:   6    1st Qu.:   9    1st Qu.:   9    1st Qu.:   6   
-##  Median :5555    Median :  16    Median :  13    Median :  11   
-##  Mean   :3342    Mean   :2728    Mean   :2930    Mean   :2889   
-##  3rd Qu.:6666    3rd Qu.:6666    3rd Qu.:6666    3rd Qu.:6666   
-##  Max.   :8888    Max.   :9999    Max.   :8888    Max.   :9999   
-##  NAs    :47762   NAs    :48522   NAs    :47877   NAs    :48553  
-##     edlvpgcy        edlvpdee        edlvpdfi        edlvpdfr    
-##  Min.   :   0    Min.   : 113    Min.   :   1    Min.   :   1   
-##  1st Qu.: 313    1st Qu.: 423    1st Qu.:   6    1st Qu.:   9   
-##  Median : 620    Median : 720    Median :  12    Median :  20   
-##  Mean   :3146    Mean   :3143    Mean   :2782    Mean   :2679   
-##  3rd Qu.:6666    3rd Qu.:6666    3rd Qu.:6666    3rd Qu.:6666   
-##  Max.   :9999    Max.   :9999    Max.   :8888    Max.   :8888   
-##  NAs    :49431   NAs    :48823   NAs    :48553   NAs    :48345  
-##     edupdde1        edupcde2         edlvpegr       edlvpdahu    
-##  Min.   :   0    Min.   :   0.0   Min.   :   1    Min.   :   1   
-##  1st Qu.:   3    1st Qu.:   7.0   1st Qu.:   5    1st Qu.:   4   
-##  Median :   5    Median :  14.5   Median :  11    Median :   8   
-##  Mean   :2542    Mean   :2581.0   Mean   :2773    Mean   :2712   
-##  3rd Qu.:6666    3rd Qu.:6666.0   3rd Qu.:6666    3rd Qu.:6666   
-##  Max.   :8888    Max.   :8888.0   Max.   :9999    Max.   :9999   
-##  NAs    :47696   NAs    :47696    NAs    :47359   NAs    :47998  
-##     edlvpdis        edlvpdie        edupail2        edupbil1      
-##  Min.   :   1    Min.   :   1    Min.   :  10    Min.   :   1.00  
-##  1st Qu.:   9    1st Qu.:   7    1st Qu.:6666    1st Qu.:   8.25  
-##  Median :  15    Median :  16    Median :6666    Median :6666.00  
-##  Mean   :2431    Mean   :2976    Mean   :6659    Mean   :3392.59  
-##  3rd Qu.:6666    3rd Qu.:6666    3rd Qu.:6666    3rd Qu.:6666.00  
-##  Max.   :8888    Max.   :8888    Max.   :6666    Max.   :9999.00  
-##  NAs    :49274   NAs    :48099   NAs    :49210   NAs    :49210    
-##     edlvpfit        edlvpelv        edlvpdlt        edlvpeme    
-##  Min.   :   1    Min.   :   2    Min.   :   0    Min.   :   0   
-##  1st Qu.:   7    1st Qu.:  11    1st Qu.:  10    1st Qu.:   6   
-##  Median :6666    Median :6666    Median :  15    Median :   9   
-##  Mean   :3390    Mean   :3533    Mean   :3313    Mean   :2892   
-##  3rd Qu.:6666    3rd Qu.:6666    3rd Qu.:6666    3rd Qu.:6666   
-##  Max.   :9999    Max.   :9999    Max.   :8888    Max.   :9999   
-##  NAs    :47251   NAs    :48864   NAs    :48751   NAs    :48507  
-##     edlvpenl        edlvpeno        edlvphpl        edlvpept    
-##  Min.   :   1    Min.   :   1    Min.   :   1    Min.   :   1   
-##  1st Qu.:  10    1st Qu.:   6    1st Qu.:   8    1st Qu.:   5   
-##  Median :  16    Median :  10    Median :  13    Median :  15   
-##  Mean   :2370    Mean   :2398    Mean   :2653    Mean   :2960   
-##  3rd Qu.:6666    3rd Qu.:6666    3rd Qu.:6666    3rd Qu.:6666   
-##  Max.   :8888    Max.   :8888    Max.   :8888    Max.   :8888   
-##  NAs    :48421   NAs    :48779   NAs    :48674   NAs    :48743  
-##     edlvpdrs        edlvpdsk        edlvpesi        edlvphes    
-##  Min.   :   1    Min.   :   1    Min.   :   1    Min.   :   1   
-##  1st Qu.:   9    1st Qu.:   7    1st Qu.:   4    1st Qu.:  10   
-##  Median :  16    Median :  16    Median :   8    Median :  26   
-##  Mean   :3287    Mean   :3104    Mean   :2575    Mean   :2741   
-##  3rd Qu.:6666    3rd Qu.:6666    3rd Qu.:6666    3rd Qu.:6666   
-##  Max.   :8888    Max.   :9999    Max.   :9999    Max.   :9999   
-##  NAs    :48553   NAs    :48674   NAs    :48868   NAs    :48272  
-##     edlvpdse          edlvpdch        edlvpdua        edupcgb1    
-##  Min.   :   1.00   Min.   :   1    Min.   :   0    Min.   :   1   
-##  1st Qu.:   8.25   1st Qu.:  12    1st Qu.:   8    1st Qu.:   4   
-##  Median :  14.00   Median :  18    Median :6666    Median :9999   
-##  Mean   :2248.03   Mean   :2506    Mean   :3854    Mean   :5530   
-##  3rd Qu.:6666.00   3rd Qu.:6666    3rd Qu.:6666    3rd Qu.:9999   
-##  Max.   :8888.00   Max.   :9999    Max.   :9999    Max.   :9999   
-##  NAs    :48886     NAs    :48732   NAs    :47455   NAs    :48432  
-##     edupbgb2        edagepgb         pdwrkp           edctnp        
-##  Min.   :   1    Min.   :  11    Min.   :0.0000   Min.   :0.000000  
-##  1st Qu.:   9    1st Qu.:  19    1st Qu.:0.0000   1st Qu.:0.000000  
-##  Median :9999    Median :9999    Median :0.0000   Median :0.000000  
-##  Mean   :5555    Mean   :5674    Mean   :0.3376   Mean   :0.007064  
-##  3rd Qu.:9999    3rd Qu.:9999    3rd Qu.:1.0000   3rd Qu.:0.000000  
-##  Max.   :9999    Max.   :9999    Max.   :1.0000   Max.   :1.000000  
-##  NAs    :48432   NAs    :48432                                      
-##     uemplap           uemplip             dsbldp            rtrdp       
-##  Min.   :0.00000   Min.   :0.000000   Min.   :0.00000   Min.   :0.0000  
-##  1st Qu.:0.00000   1st Qu.:0.000000   1st Qu.:0.00000   1st Qu.:0.0000  
-##  Median :0.00000   Median :0.000000   Median :0.00000   Median :0.0000  
-##  Mean   :0.01469   Mean   :0.008939   Mean   :0.01161   Mean   :0.1534  
-##  3rd Qu.:0.00000   3rd Qu.:0.000000   3rd Qu.:0.00000   3rd Qu.:0.0000  
-##  Max.   :1.00000   Max.   :1.000000   Max.   :1.00000   Max.   :1.0000  
-##                                                                         
-##      cmsrvp             hswrkp           dngothp             dngdkp         
-##  Min.   :0.000000   Min.   :0.00000   Min.   :0.000000   Min.   :0.0000000  
-##  1st Qu.:0.000000   1st Qu.:0.00000   1st Qu.:0.000000   1st Qu.:0.0000000  
-##  Median :0.000000   Median :0.00000   Median :0.000000   Median :0.0000000  
-##  Mean   :0.000878   Mean   :0.06603   Mean   :0.005368   Mean   :0.0007981  
-##  3rd Qu.:0.000000   3rd Qu.:0.00000   3rd Qu.:0.000000   3rd Qu.:0.0000000  
-##  Max.   :1.000000   Max.   :1.00000   Max.   :1.000000   Max.   :1.0000000  
-##                                                                             
-##     dngnapp         dngrefp            dngnap             mnactp     
-##  Min.   :0.000   Min.   :0.00000   Min.   :0.000000   Min.   : 1.00  
-##  1st Qu.:0.000   1st Qu.:0.00000   1st Qu.:0.000000   1st Qu.:66.00  
-##  Median :0.000   Median :0.00000   Median :0.000000   Median :66.00  
-##  Mean   :0.428   Mean   :0.00425   Mean   :0.002734   Mean   :63.65  
-##  3rd Qu.:1.000   3rd Qu.:0.00000   3rd Qu.:0.000000   3rd Qu.:66.00  
-##  Max.   :1.000   Max.   :1.00000   Max.   :1.000000   Max.   :99.00  
-##                                                                      
-##     crpdwkp         isco08p         emprelp         wkhtotp         edulvlfb   
-##  Min.   :1.000   Min.   :    0   Min.   :1.000   Min.   :  0.0   Min.   :   0  
-##  1st Qu.:6.000   1st Qu.: 7115   1st Qu.:1.000   1st Qu.: 44.0   1st Qu.: 212  
-##  Median :6.000   Median :66666   Median :6.000   Median :666.0   Median : 321  
-##  Mean   :5.084   Mean   :46507   Mean   :4.444   Mean   :477.3   Mean   :1105  
-##  3rd Qu.:6.000   3rd Qu.:66666   3rd Qu.:6.000   3rd Qu.:666.0   3rd Qu.: 520  
-##  Max.   :9.000   Max.   :99999   Max.   :9.000   Max.   :999.0   Max.   :9999  
-##                                                                                
-##     eiscedf         edlvfeat        edlvfebe        edlvfebg     
-##  Min.   : 1.00   Min.   :   1    Min.   :   1    Min.   :   1.0  
-##  1st Qu.: 2.00   1st Qu.:   6    1st Qu.:   3    1st Qu.:   5.0  
-##  Median : 3.00   Median :   6    Median :   8    Median :   8.0  
-##  Mean   :11.06   Mean   : 330    Mean   :1191    Mean   : 371.9  
-##  3rd Qu.: 5.00   3rd Qu.:   7    3rd Qu.:  14    3rd Qu.:   9.0  
-##  Max.   :99.00   Max.   :8888    Max.   :9999    Max.   :8888.0  
-##                  NAs    :47762   NAs    :48522   NAs    :47877   
-##     edlvfehr        edlvfgcy         edlvfdee        edlvfdfi     
-##  Min.   :   1    Min.   :   0.0   Min.   :   0    Min.   :   1.0  
-##  1st Qu.:   3    1st Qu.: 113.0   1st Qu.: 229    1st Qu.:   2.0  
-##  Median :   5    Median : 213.0   Median : 323    Median :   5.0  
-##  Mean   : 242    Mean   : 674.9   Mean   :1605    Mean   : 596.2  
-##  3rd Qu.:   6    3rd Qu.: 313.0   3rd Qu.: 720    3rd Qu.:   9.0  
-##  Max.   :8888    Max.   :9999.0   Max.   :8888    Max.   :9999.0  
-##  NAs    :48553   NAs    :49431    NAs    :48823   NAs    :48553   
-##     edlvfdfr        edufcde1        edufbde2        edlvfegr     
-##  Min.   :   1    Min.   :   0    Min.   :   0    Min.   :   1.0  
-##  1st Qu.:   3    1st Qu.:   2    1st Qu.:   7    1st Qu.:   2.0  
-##  Median :   7    Median :   3    Median :   7    Median :   3.0  
-##  Mean   :1452    Mean   :1124    Mean   :1110    Mean   : 155.8  
-##  3rd Qu.:  19    3rd Qu.:   5    3rd Qu.:  13    3rd Qu.:   5.0  
-##  Max.   :8888    Max.   :8888    Max.   :8888    Max.   :8888.0  
-##  NAs    :48345   NAs    :47696   NAs    :47696   NAs    :47359   
-##    edlvfdahu         edlvfdis          edlvfdie         edufbil1     
-##  Min.   :   1.0   Min.   :   1.00   Min.   :   1.0   Min.   :   1.0  
-##  1st Qu.:   3.0   1st Qu.:   4.25   1st Qu.:   2.0   1st Qu.:   3.0  
-##  Median :   4.0   Median :   9.00   Median :   3.0   Median :   5.0  
-##  Mean   : 289.6   Mean   : 510.43   Mean   : 591.9   Mean   : 991.9  
-##  3rd Qu.:   4.0   3rd Qu.:  13.00   3rd Qu.:   8.0   3rd Qu.:  13.0  
-##  Max.   :8888.0   Max.   :8888.00   Max.   :8888.0   Max.   :8888.0  
-##  NAs    :47998    NAs    :49274     NAs    :48099    NAs    :49210   
-##     edufail2        edlvffit         edlvfelv        edlvfdlt    
-##  Min.   :   4    Min.   :   1.0   Min.   :   1    Min.   :   0   
-##  1st Qu.:6666    1st Qu.:   2.0   1st Qu.:   3    1st Qu.:   3   
-##  Median :6666    Median :   4.0   Median :   8    Median :   8   
-##  Mean   :6654    Mean   : 638.6   Mean   :1903    Mean   :1466   
-##  3rd Qu.:6666    3rd Qu.:   8.0   3rd Qu.:  19    3rd Qu.:  13   
-##  Max.   :9999    Max.   :9999.0   Max.   :8888    Max.   :9999   
-##  NAs    :49210   NAs    :47251    NAs    :48864   NAs    :48751  
-##     edlvfeme        edlvfenl         edlvfeno         edlvfgpl     
-##  Min.   :   0    Min.   :   1.0   Min.   :   1.0   Min.   :   1.0  
-##  1st Qu.:   2    1st Qu.:   3.0   1st Qu.:   3.0   1st Qu.:   3.0  
-##  Median :   4    Median :   6.0   Median :   6.0   Median :   5.0  
-##  Mean   : 615    Mean   : 934.6   Mean   : 634.4   Mean   : 636.6  
-##  3rd Qu.:   6    3rd Qu.:  14.0   3rd Qu.:   8.0   3rd Qu.:  10.0  
-##  Max.   :8888    Max.   :8888.0   Max.   :9999.0   Max.   :9999.0  
-##  NAs    :48507   NAs    :48421    NAs    :48779    NAs    :48674   
-##     edlvfept         edlvfdrs         edlvfdsk         edlvfesi     
-##  Min.   :   1.0   Min.   :   1.0   Min.   :   1.0   Min.   :   0.0  
-##  1st Qu.:   2.0   1st Qu.:   3.0   1st Qu.:   6.0   1st Qu.:   2.0  
-##  Median :   2.0   Median :   7.0   Median :   6.0   Median :   3.0  
-##  Mean   : 625.6   Mean   : 360.8   Mean   : 631.6   Mean   : 482.3  
-##  3rd Qu.:   5.0   3rd Qu.:   9.0   3rd Qu.:   7.0   3rd Qu.:   4.0  
-##  Max.   :8888.0   Max.   :8888.0   Max.   :9999.0   Max.   :9999.0  
-##  NAs    :48743    NAs    :48553    NAs    :48674    NAs    :48868   
-##     edlvfges         edlvfdse        edlvfdch         edlvfdua    
-##  Min.   :   1.0   Min.   :   1    Min.   :   1.0   Min.   :   0   
-##  1st Qu.:   2.0   1st Qu.:   2    1st Qu.:   5.0   1st Qu.:   3   
-##  Median :   5.0   Median :   5    Median :  12.0   Median :   7   
-##  Mean   : 484.2   Mean   : 752    Mean   : 707.7   Mean   :1766   
-##  3rd Qu.:  12.0   3rd Qu.:  13    3rd Qu.:  16.0   3rd Qu.:  10   
-##  Max.   :8888.0   Max.   :8888    Max.   :8888.0   Max.   :8888   
-##  NAs    :48272    NAs    :48886   NAs    :48732    NAs    :47455  
-##     edufcgb1        edufbgb2        edagefgb        emprf14     
-##  Min.   :   1    Min.   :   1    Min.   :  10    Min.   :1.000  
-##  1st Qu.:   4    1st Qu.:  11    1st Qu.:  15    1st Qu.:1.000  
-##  Median :   7    Median :  11    Median :  21    Median :1.000  
-##  Mean   :2337    Mean   :2385    Mean   :3757    Mean   :1.639  
-##  3rd Qu.:7777    3rd Qu.:7777    3rd Qu.:8888    3rd Qu.:2.000  
-##  Max.   :8888    Max.   :8888    Max.   :8888    Max.   :9.000  
-##  NAs    :48432   NAs    :48432   NAs    :48432                  
-##     occf14b         edulvlmb         eiscedm          edlvmeat     
-##  Min.   : 1.00   Min.   :   0.0   Min.   : 1.000   Min.   :   1.0  
-##  1st Qu.: 5.00   1st Qu.: 113.0   1st Qu.: 1.000   1st Qu.:   3.0  
-##  Median : 6.00   Median : 313.0   Median : 3.000   Median :   6.0  
-##  Mean   :14.15   Mean   : 819.2   Mean   : 8.263   Mean   : 127.1  
-##  3rd Qu.: 9.00   3rd Qu.: 323.0   3rd Qu.: 4.000   3rd Qu.:   6.0  
-##  Max.   :99.00   Max.   :9999.0   Max.   :99.000   Max.   :8888.0  
-##                                                    NAs    :47762   
-##     edlvmebe         edlvmebg         edlvmehr          edlvmgcy     
-##  Min.   :   1.0   Min.   :   1.0   Min.   :   1.00   Min.   :   0.0  
-##  1st Qu.:   3.0   1st Qu.:   4.0   1st Qu.:   2.00   1st Qu.: 113.0  
-##  Median :   8.0   Median :   8.0   Median :   3.00   Median : 113.0  
-##  Mean   : 894.8   Mean   : 216.2   Mean   :  96.52   Mean   : 527.8  
-##  3rd Qu.:  12.0   3rd Qu.:   9.0   3rd Qu.:   6.00   3rd Qu.: 313.0  
-##  Max.   :9999.0   Max.   :8888.0   Max.   :8888.00   Max.   :9999.0  
-##  NAs    :48522    NAs    :47877    NAs    :48553     NAs    :49431   
-##     edlvmdee         edlvmdfi         edlvmdfr        edumcde1    
-##  Min.   :   0.0   Min.   :   1.0   Min.   :   1    Min.   :   0   
-##  1st Qu.: 229.0   1st Qu.:   2.0   1st Qu.:   3    1st Qu.:   2   
-##  Median : 323.0   Median :   5.0   Median :   7    Median :   2   
-##  Mean   : 876.4   Mean   : 318.3   Mean   :1117    Mean   : 664   
-##  3rd Qu.: 620.0   3rd Qu.:   8.0   3rd Qu.:  15    3rd Qu.:   3   
-##  Max.   :8888.0   Max.   :9999.0   Max.   :8888    Max.   :8888   
-##  NAs    :48823    NAs    :48553    NAs    :48345   NAs    :47696  
-##     edumbde2         edlvmegr         edlvmdahu         edlvmdis     
-##  Min.   :   0.0   Min.   :   1.00   Min.   :   1.0   Min.   :   1.0  
-##  1st Qu.:   0.0   1st Qu.:   2.00   1st Qu.:   3.0   1st Qu.:   4.0  
-##  Median :   7.0   Median :   2.00   Median :   4.0   Median :   5.0  
-##  Mean   : 810.2   Mean   :  97.12   Mean   : 143.3   Mean   : 352.4  
-##  3rd Qu.:   8.0   3rd Qu.:   5.00   3rd Qu.:   6.0   3rd Qu.:  13.0  
-##  Max.   :8888.0   Max.   :8888.00   Max.   :8888.0   Max.   :8888.0  
-##  NAs    :47696    NAs    :47359     NAs    :47998    NAs    :49274   
-##     edlvmdie         edumbil1         edumail2        edlvmfit     
-##  Min.   :   1.0   Min.   :   1.0   Min.   :   6    Min.   :   1.0  
-##  1st Qu.:   2.0   1st Qu.:   3.0   1st Qu.:6666    1st Qu.:   2.0  
-##  Median :   3.0   Median :   5.0   Median :6666    Median :   4.0  
-##  Mean   : 525.2   Mean   : 715.6   Mean   :6644    Mean   : 493.3  
-##  3rd Qu.:   7.0   3rd Qu.:  12.0   3rd Qu.:6666    3rd Qu.:   6.0  
-##  Max.   :8888.0   Max.   :8888.0   Max.   :6666    Max.   :9999.0  
-##  NAs    :48099    NAs    :49210    NAs    :49210   NAs    :47251   
-##     edlvmelv         edlvmdlt         edlvmeme         edlvmenl     
-##  Min.   :   1.0   Min.   :   0.0   Min.   :   0.0   Min.   :   1.0  
-##  1st Qu.:   3.0   1st Qu.:   2.0   1st Qu.:   2.0   1st Qu.:   3.0  
-##  Median :   7.0   Median :   7.0   Median :   4.0   Median :   4.0  
-##  Mean   : 996.8   Mean   : 778.5   Mean   : 496.5   Mean   : 769.1  
-##  3rd Qu.:  14.0   3rd Qu.:  12.0   3rd Qu.:   6.0   3rd Qu.:  13.0  
-##  Max.   :8888.0   Max.   :9999.0   Max.   :8888.0   Max.   :8888.0  
-##  NAs    :48864    NAs    :48751    NAs    :48507    NAs    :48421   
-##     edlvmeno         edlvmgpl        edlvmept         edlvmdrs    
-##  Min.   :   1.0   Min.   :   1    Min.   :   1.0   Min.   :   1   
-##  1st Qu.:   3.0   1st Qu.:   3    1st Qu.:   1.0   1st Qu.:   2   
-##  Median :   5.0   Median :   5    Median :   2.0   Median :   4   
-##  Mean   : 402.2   Mean   : 415    Mean   : 320.4   Mean   : 203   
-##  3rd Qu.:   8.0   3rd Qu.:  10    3rd Qu.:   3.0   3rd Qu.:   9   
-##  Max.   :9999.0   Max.   :9999    Max.   :8888.0   Max.   :8888   
-##  NAs    :48779    NAs    :48674   NAs    :48743    NAs    :48553  
-##     edlvmdsk         edlvmesi         edlvmges        edlvmdse     
-##  Min.   :   1.0   Min.   :   0.0   Min.   :   1    Min.   :   1.0  
-##  1st Qu.:   4.0   1st Qu.:   2.0   1st Qu.:   2    1st Qu.:   2.0  
-##  Median :   6.0   Median :   3.0   Median :   4    Median :   5.0  
-##  Mean   : 449.7   Mean   : 228.6   Mean   : 236    Mean   : 542.5  
-##  3rd Qu.:   7.0   3rd Qu.:   4.0   3rd Qu.:  10    3rd Qu.:  12.0  
-##  Max.   :9999.0   Max.   :9999.0   Max.   :8888    Max.   :8888.0  
-##  NAs    :48674    NAs    :48868    NAs    :48272   NAs    :48886   
-##     edlvmdch         edlvmdua        edumcgb1        edumbgb2    
-##  Min.   :   1.0   Min.   :   0    Min.   :   1    Min.   :   1   
-##  1st Qu.:   3.0   1st Qu.:   2    1st Qu.:   4    1st Qu.:  11   
-##  Median :  11.0   Median :   5    Median :   7    Median :  11   
-##  Mean   : 494.6   Mean   :1023    Mean   :2095    Mean   :2150   
-##  3rd Qu.:  12.0   3rd Qu.:  10    3rd Qu.:   7    3rd Qu.:  11   
-##  Max.   :8888.0   Max.   :8888    Max.   :8888    Max.   :8888   
-##  NAs    :48732    NAs    :47455   NAs    :48432   NAs    :48432  
-##     edagemgb        emprm14         occm14b         atncrse     
-##  Min.   :  10    Min.   :1.000   Min.   : 1.00   Min.   :1.000  
-##  1st Qu.:  16    1st Qu.:1.000   1st Qu.: 4.00   1st Qu.:1.000  
-##  Median :  19    Median :1.000   Median : 8.00   Median :2.000  
-##  Mean   :3362    Mean   :1.954   Mean   :28.99   Mean   :1.785  
-##  3rd Qu.:8888    3rd Qu.:3.000   3rd Qu.:66.00   3rd Qu.:2.000  
-##  Max.   :8888    Max.   :9.000   Max.   :99.00   Max.   :9.000  
-##  NAs    :48432                                                  
-##     anctrya1         anctrya2         regunit           region     
-##  Min.   : 10000   Min.   : 10000   Min.   :1.00   Length   :50116  
-##  1st Qu.: 11100   1st Qu.: 29050   1st Qu.:2.00   N.unique :  328  
-##  Median : 13060   Median :555555   Median :2.00   N.blank  :    0  
-##  Mean   : 20215   Mean   :428397   Mean   :2.11   Min.nchar:    2  
-##  3rd Qu.: 15040   3rd Qu.:555555   3rd Qu.:3.00   Max.nchar:    5  
-##  Max.   :999999   Max.   :999999   Max.   :3.00                    
-##                                                                    
-##     ipcrtiva         impricha         ipeqopta         ipshabta     
-##  Min.   : 1.000   Min.   : 1.000   Min.   : 1.000   Min.   : 1.000  
-##  1st Qu.: 2.000   1st Qu.: 3.000   1st Qu.: 1.000   1st Qu.: 2.000  
-##  Median : 2.000   Median : 4.000   Median : 2.000   Median : 3.000  
-##  Mean   : 4.109   Mean   : 5.362   Mean   : 3.469   Mean   : 4.662  
-##  3rd Qu.: 3.000   3rd Qu.: 5.000   3rd Qu.: 3.000   3rd Qu.: 4.000  
-##  Max.   :99.000   Max.   :99.000   Max.   :99.000   Max.   :99.000  
-##                                                                     
-##     impsafea         impdiffa         ipfrulea         ipudrsta     
-##  Min.   : 1.000   Min.   : 1.000   Min.   : 1.000   Min.   : 1.000  
-##  1st Qu.: 1.000   1st Qu.: 2.000   1st Qu.: 2.000   1st Qu.: 2.000  
-##  Median : 2.000   Median : 3.000   Median : 3.000   Median : 2.000  
-##  Mean   : 3.515   Mean   : 4.404   Mean   : 5.136   Mean   : 3.952  
-##  3rd Qu.: 3.000   3rd Qu.: 4.000   3rd Qu.: 4.000   3rd Qu.: 3.000  
-##  Max.   :99.000   Max.   :99.000   Max.   :99.000   Max.   :99.000  
-##                                                                     
-##     ipmodsta         ipgdtima         impfreea         iphlppla     
-##  Min.   : 1.000   Min.   : 1.000   Min.   : 1.000   Min.   : 1.000  
-##  1st Qu.: 2.000   1st Qu.: 2.000   1st Qu.: 1.000   1st Qu.: 1.000  
-##  Median : 2.000   Median : 3.000   Median : 2.000   Median : 2.000  
-##  Mean   : 4.141   Mean   : 4.268   Mean   : 3.478   Mean   : 3.478  
-##  3rd Qu.: 4.000   3rd Qu.: 4.000   3rd Qu.: 3.000   3rd Qu.: 3.000  
-##  Max.   :99.000   Max.   :99.000   Max.   :99.000   Max.   :99.000  
-##                                                                     
-##     ipsucesa         ipstrgva         ipadvnta         ipbhprpa     
-##  Min.   : 1.000   Min.   : 1.000   Min.   : 1.000   Min.   : 1.000  
-##  1st Qu.: 2.000   1st Qu.: 1.000   1st Qu.: 3.000   1st Qu.: 2.000  
-##  Median : 3.000   Median : 2.000   Median : 4.000   Median : 2.000  
-##  Mean   : 4.723   Mean   : 4.148   Mean   : 5.227   Mean   : 4.181  
-##  3rd Qu.: 4.000   3rd Qu.: 3.000   3rd Qu.: 5.000   3rd Qu.: 3.000  
-##  Max.   :99.000   Max.   :99.000   Max.   :99.000   Max.   :99.000  
-##                                                                     
-##     iprspota         iplylfra         impenva          imptrada     
-##  Min.   : 1.000   Min.   : 1.000   Min.   : 1.000   Min.   : 1.000  
-##  1st Qu.: 2.000   1st Qu.: 1.000   1st Qu.: 1.000   1st Qu.: 2.000  
-##  Median : 3.000   Median : 2.000   Median : 2.000   Median : 2.000  
-##  Mean   : 4.829   Mean   : 3.302   Mean   : 3.519   Mean   : 4.071  
-##  3rd Qu.: 4.000   3rd Qu.: 2.000   3rd Qu.: 3.000   3rd Qu.: 4.000  
-##  Max.   :99.000   Max.   :99.000   Max.   :99.000   Max.   :99.000  
-##                                                                     
-##     impfuna          testji1         testji2         testji3     
-##  Min.   : 1.000   Min.   :1.000   Min.   :1.000   Min.   :1.000  
-##  1st Qu.: 2.000   1st Qu.:4.000   1st Qu.:4.000   1st Qu.:4.000  
-##  Median : 3.000   Median :6.000   Median :6.000   Median :6.000  
-##  Mean   : 4.336   Mean   :5.011   Mean   :5.168   Mean   :5.134  
-##  3rd Qu.: 4.000   3rd Qu.:6.000   3rd Qu.:6.000   3rd Qu.:6.000  
-##  Max.   :99.000   Max.   :9.000   Max.   :9.000   Max.   :9.000  
-##                                                                  
-##     testji4         testji5         testji6         testji7     
-##  Min.   :0.000   Min.   :0.000   Min.   :0.000   Min.   : 0.00  
-##  1st Qu.:3.000   1st Qu.:3.000   1st Qu.:3.000   1st Qu.: 7.00  
-##  Median :6.000   Median :6.000   Median :6.000   Median :66.00  
-##  Mean   :4.821   Mean   :4.672   Mean   :4.734   Mean   :46.67  
-##  3rd Qu.:6.000   3rd Qu.:6.000   3rd Qu.:6.000   3rd Qu.:66.00  
-##  Max.   :9.000   Max.   :9.000   Max.   :9.000   Max.   :99.00  
-##                                                                 
-##     testji8         testji9         respc19a        symtc19     
-##  Min.   : 0.00   Min.   : 0.00   Min.   :1.000   Min.   :1.000  
-##  1st Qu.: 6.00   1st Qu.: 7.00   1st Qu.:1.000   1st Qu.:2.000  
-##  Median :66.00   Median :66.00   Median :1.000   Median :2.000  
-##  Mean   :46.32   Mean   :46.65   Mean   :1.864   Mean   :3.287  
-##  3rd Qu.:66.00   3rd Qu.:66.00   3rd Qu.:3.000   3rd Qu.:6.000  
-##  Max.   :99.00   Max.   :99.00   Max.   :9.000   Max.   :9.000  
-##                                                                 
-##     symtnc19         vacc19          recon             inwds      
-##  Min.   :1.000   Min.   :1.000   Min.   :1.000   Length   :50116  
-##  1st Qu.:6.000   1st Qu.:1.000   1st Qu.:1.000   N.unique :49868  
-##  Median :6.000   Median :1.000   Median :2.000   N.blank  :    3  
-##  Mean   :5.087   Mean   :1.249   Mean   :4.533   Min.nchar:    0  
-##  3rd Qu.:6.000   3rd Qu.:1.000   3rd Qu.:9.000   Max.nchar:   19  
-##  Max.   :9.000   Max.   :9.000   Max.   :9.000                    
-##                                                                   
-##        ainws             ainwe             binwe             cinwe      
-##  Length   :50116   Length   :50116   Length   :50116   Length   :50116  
-##  N.unique :49932   N.unique :49917   N.unique :49961   N.unique :49655  
-##  N.blank  :   10   N.blank  :    9   N.blank  :   11   N.blank  :  278  
-##  Min.nchar:    0   Min.nchar:    0   Min.nchar:    0   Min.nchar:    0  
-##  Max.nchar:   19   Max.nchar:   19   Max.nchar:   19   Max.nchar:   19  
-##                                                                         
-##                                                                         
-##        dinwe             einwe             finwe             hinwe      
-##  Length   :50116   Length   :50116   Length   :50116   Length   :50116  
-##  N.unique :49923   N.unique :49007   N.unique :49901   N.unique :49809  
-##  N.blank  :   12   N.blank  :  917   N.blank  :   57   N.blank  :  159  
-##  Min.nchar:    0   Min.nchar:    0   Min.nchar:    0   Min.nchar:    0  
-##  Max.nchar:   19   Max.nchar:   19   Max.nchar:   19   Max.nchar:   19  
-##                                                                         
-##                                                                         
-##        iinwe             kinwe             rinwe             inwde      
-##  Length   :50116   Length   :50116   Length   :50116   Length   :50116  
-##  N.unique :49910   N.unique :49894   N.unique :17741   N.unique :49941  
-##  N.blank  :   34   N.blank  :   79   N.blank  :32334   N.blank  :   13  
-##  Min.nchar:    0   Min.nchar:    0   Min.nchar:    0   Min.nchar:    0  
-##  Max.nchar:   19   Max.nchar:   19   Max.nchar:   19   Max.nchar:   19  
-##                                                                         
-##                                                                         
-##        jinws             jinwe           inwtm              mode      
-##  Length   :50116   Length   :50116   Min.   :   1.00   Min.   :1.000  
-##  N.unique :49906   N.unique :49532   1st Qu.:  41.00   1st Qu.:1.000  
-##  N.blank  :   34   N.blank  :  425   Median :  52.00   Median :1.000  
-##  Min.nchar:    0   Min.nchar:    0   Mean   :  55.55   Mean   :1.042  
-##  Max.nchar:   19   Max.nchar:   19   3rd Qu.:  65.00   3rd Qu.:1.000  
-##                                      Max.   :1277.00   Max.   :9.000  
-##                                      NAs    :518                      
-##      domain           prob              stratum          psu       
-##  Min.   :1.00    Min.   :2.768e-05   Min.   :   1   Min.   :    1  
-##  1st Qu.:1.00    1st Qu.:2.111e-04   1st Qu.: 325   1st Qu.: 7369  
-##  Median :2.00    Median :5.801e-04   Median : 870   Median :13556  
-##  Mean   :1.64    Mean   :1.070e-03   Mean   : 795   Mean   :13289  
-##  3rd Qu.:2.00    3rd Qu.:1.046e-03   3rd Qu.:1081   3rd Qu.:19288  
-##  Max.   :3.00    Max.   :3.005e-02   Max.   :1529   Max.   :25385  
-##  NAs    :21310</code></pre>
-<p>Since this output is useless due to its vastness we might well try a
-different way to summarise things:</p>
-<pre class="r"><code>str(ess_data)</code></pre>
-<pre><code>## &#39;data.frame&#39;:    50116 obs. of  691 variables:
-##  $ name     : chr  &quot;ESS11e04_2&quot; &quot;ESS11e04_2&quot; &quot;ESS11e04_2&quot; &quot;ESS11e04_2&quot; ...
-##  $ essround : int  11 11 11 11 11 11 11 11 11 11 ...
-##  $ edition  : num  4.2 4.2 4.2 4.2 4.2 4.2 4.2 4.2 4.2 4.2 ...
-##  $ proddate : chr  &quot;02.07.2026&quot; &quot;02.07.2026&quot; &quot;02.07.2026&quot; &quot;02.07.2026&quot; ...
-##  $ idno     : int  50014 50030 50057 50106 50145 50158 50211 50212 50213 50235 ...
-##  $ cntry    : chr  &quot;AT&quot; &quot;AT&quot; &quot;AT&quot; &quot;AT&quot; ...
-##  $ dweight  : num  1.185 0.61 1.392 0.556 0.723 ...
-##  $ pspwght  : num  0.393 0.325 4 0.176 1.061 ...
-##  $ pweight  : num  0.331 0.331 0.331 0.331 0.331 ...
-##  $ anweight : num  0.13 0.1076 1.3237 0.0583 0.3511 ...
-##  $ nwspol   : int  90 90 30 15 60 120 45 120 20 120 ...
-##  $ netusoft : int  5 5 5 1 5 5 1 5 5 1 ...
-##  $ netustm  : int  180 570 30 6666 120 120 6666 240 180 6666 ...
-##  $ ppltrst  : int  5 10 6 6 6 8 7 8 7 3 ...
-##  $ pplfair  : int  5 0 9 6 3 8 7 8 8 4 ...
-##  $ pplhlp   : int  5 1 8 6 8 4 8 8 7 3 ...
-##  $ polintr  : int  1 2 2 3 2 2 2 1 3 2 ...
-##  $ psppsgva : int  4 3 4 2 3 2 2 4 2 3 ...
-##  $ actrolga : int  5 2 4 2 1 3 2 4 2 2 ...
-##  $ psppipla : int  4 3 4 2 4 2 2 4 2 3 ...
-##  $ cptppola : int  5 2 3 3 3 3 2 5 2 3 ...
-##  $ trstprl  : int  6 6 7 5 6 3 6 9 6 8 ...
-##  $ trstlgl  : int  9 6 5 6 8 5 5 9 7 8 ...
-##  $ trstplc  : int  10 4 8 9 8 7 8 9 8 10 ...
-##  $ trstplt  : int  5 1 4 3 5 5 4 7 3 8 ...
-##  $ trstprt  : int  5 0 4 3 5 5 5 6 2 8 ...
-##  $ trstep   : int  5 5 7 4 6 4 4 7 5 4 ...
-##  $ trstun   : int  5 5 5 4 8 6 6 7 6 8 ...
-##  $ vote     : int  1 1 1 2 1 1 1 1 1 1 ...
-##  $ prtvtdat : int  1 5 5 66 5 7 1 5 5 2 ...
-##  $ prtvtebe : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvtfbg : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvtchr : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvtccy : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvtiee : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvtffi : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvtffr : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvgde1 : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvgde2 : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvtegr : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvthhu : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvteis : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvteie : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvteil : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvteit : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvtblv : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvclt1 : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvclt2 : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvclt3 : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvtbme : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvtinl : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvtcno : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvtfpl : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvtept : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvtbrs : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvtesk : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvtgsi : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvtges : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvtese : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvthch : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvtdua : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtvtdgb : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ contplt  : int  2 2 1 2 2 2 2 1 2 2 ...
-##  $ donprty  : int  2 2 1 2 2 2 2 2 2 2 ...
-##  $ badge    : int  2 1 2 2 2 2 2 2 2 2 ...
-##  $ sgnptit  : int  2 1 1 2 1 2 2 1 2 2 ...
-##  $ pbldmna  : int  2 1 1 2 2 2 2 1 2 2 ...
-##  $ bctprd   : int  2 1 1 2 2 1 2 1 2 2 ...
-##  $ pstplonl : int  2 2 1 2 2 2 2 1 2 2 ...
-##  $ volunfp  : int  2 1 1 2 2 2 2 1 2 2 ...
-##  $ clsprty  : int  1 1 1 2 1 2 1 1 2 2 ...
-##  $ prtcleat : int  1 5 5 66 5 66 1 5 66 66 ...
-##  $ prtclebe : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtclfbg : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtclbhr : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtclccy : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtcliee : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtclgfi : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtclgfr : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtclgde : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtclegr : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtclihu : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtcleis : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtclfie : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtclfil : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtclfit : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtclblv : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtclclt : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtclbme : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtclhnl : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtclcno : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtcljpl : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtclgpt : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtclbrs : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtclesk : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtclgsi : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtclhes : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtclese : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ prtclhch : int  NA NA NA NA NA NA NA NA NA NA ...
-##   [list output truncated]</code></pre>
-<p>This is maybe more useful in terms of providing more meaningful
-information about each column (each variable). To begin with, observe
-that data has been read as a <code>chr</code>, i.e., a character and not
-a date object. So, one correction we might be interested into would be
-to actually cast this to a date object.</p>
-<pre class="r"><code>ess_data$proddate &lt;- as.Date(ess_data$proddate, format = &quot;%d.%m.%y&quot;)</code></pre>
-<p>Now, let us keep just a few of those columns to work with for the
-rest of this session;</p>
-<pre class="r"><code># Data frames are the internal representations of datasets in R.
-ess_pol &lt;- data.frame(
-  ess_data$cntry,
-  ess_data$nwspol,
-  ess_data$netusoft,
-  ess_data$netustm,
-  ess_data$ppltrst
-)
-str(ess_pol)</code></pre>
-<pre><code>## &#39;data.frame&#39;:    50116 obs. of  5 variables:
-##  $ ess_data.cntry   : chr  &quot;AT&quot; &quot;AT&quot; &quot;AT&quot; &quot;AT&quot; ...
-##  $ ess_data.nwspol  : int  90 90 30 15 60 120 45 120 20 120 ...
-##  $ ess_data.netusoft: int  5 5 5 1 5 5 1 5 5 1 ...
-##  $ ess_data.netustm : int  180 570 30 6666 120 120 6666 240 180 6666 ...
-##  $ ess_data.ppltrst : int  5 10 6 6 6 8 7 8 7 3 ...</code></pre>
-<p>Optionally, you might also want to export this subset as a CSV, e.g.,
-using:</p>
-<pre class="r"><code>write.csv(ess_pol, &quot;ess_pol.csv&quot;)</code></pre>
-<p>Now, we might be interested into counting participants by each
-country. To do so, we first count unique values in
-<code>ess_pol$cntry</code>:</p>
-<pre class="r"><code>unique(ess_pol$ess_data.cntry)</code></pre>
-<pre><code>##  [1] &quot;AT&quot; &quot;BE&quot; &quot;BG&quot; &quot;CH&quot; &quot;CY&quot; &quot;DE&quot; &quot;EE&quot; &quot;ES&quot; &quot;FI&quot; &quot;FR&quot; &quot;GB&quot; &quot;GR&quot; &quot;HR&quot; &quot;HU&quot; &quot;IE&quot;
-## [16] &quot;IL&quot; &quot;IS&quot; &quot;IT&quot; &quot;LT&quot; &quot;LV&quot; &quot;ME&quot; &quot;NL&quot; &quot;NO&quot; &quot;PL&quot; &quot;PT&quot; &quot;RS&quot; &quot;SE&quot; &quot;SI&quot; &quot;SK&quot; &quot;UA&quot;</code></pre>
-<p>One way of doing so and, in general, of performing any SQL-equivalent
-<code>GROUP BY</code> computation, us by using
-<code>aggregate()</code>.</p>
+<div id="simple-hypothesis-testing" class="section level2">
+<h2>Simple Hypothesis Testing</h2>
+<p>First, reload the dataset:</p>
+<pre class="r"><code>ess_pol &lt;- read.csv(&#39;ess_pol.csv&#39;, sep = &#39;,&#39;)
+summary(ess_pol)</code></pre>
+<pre><code>##        X           ess_data.cntry  ess_data.nwspol ess_data.netusoft
+##  Min.   :    1   Length   :50116   Min.   :   0    Min.   :1.000    
+##  1st Qu.:12530   N.unique :   30   1st Qu.:  30    1st Qu.:4.000    
+##  Median :25059   N.blank  :    0   Median :  60    Median :5.000    
+##  Mean   :25059   Min.nchar:    2   Mean   : 229    Mean   :4.202    
+##  3rd Qu.:37587   Max.nchar:    2   3rd Qu.: 120    3rd Qu.:5.000    
+##  Max.   :50116                     Max.   :9999    Max.   :9.000    
+##  ess_data.netustm ess_data.ppltrst
+##  Min.   :   0     Min.   : 0.000  
+##  1st Qu.: 120     1st Qu.: 3.000  
+##  Median : 240     Median : 5.000  
+##  Mean   :1706     Mean   : 5.211  
+##  3rd Qu.: 660     3rd Qu.: 7.000  
+##  Max.   :9999     Max.   :99.000</code></pre>
+<p>Let us also review the aggregate distribution of all those variables
+per country:</p>
 <pre class="r"><code>aggregate(ess_pol, by = list(ess_pol$ess_data.cntry), FUN = mean)</code></pre>
 <pre><code>## Warning in mean.default(X[[i]], ...): argument is not numeric or logical:
 ## returning NA
@@ -1970,68 +448,186 @@ country. To do so, we first count unique values in
 ## returning NA
 ## Warning in mean.default(X[[i]], ...): argument is not numeric or logical:
 ## returning NA</code></pre>
-<pre><code>##    Group.1 ess_data.cntry ess_data.nwspol ess_data.netusoft ess_data.netustm
-## 1       AT             NA        55.56669          4.143585        1675.8093
-## 2       BE             NA       110.16876          4.537014        1048.1851
-## 3       BG             NA       160.66994          3.804377        2362.7611
-## 4       CH             NA        73.68569          4.545520        1041.1337
-## 5       CY             NA       116.79124          3.816058        2262.5620
-## 6       DE             NA       244.47314          4.482645        1152.9355
-## 7       EE             NA       213.71230          4.594741         981.4540
-## 8       ES             NA        95.74729          4.287961        1530.9550
-## 9       FI             NA        92.65579          4.592450        1039.7735
-## 10      FR             NA       145.26708          4.331451        1404.0779
-## 11      GB             NA       264.16211          4.382423        1406.1764
-## 12      GR             NA       100.42836          4.120421        1802.7602
-## 13      HR             NA       374.12220          3.844530        2334.1843
-## 14      HU             NA       331.38952          3.872993        2329.2082
-## 15      IE             NA       103.95389          4.148736        1697.9926
-## 16      IL             NA       222.62804          4.619205        1133.9890
-## 17      IS             NA        86.92755          4.806413         616.9371
-## 18      IT             NA       378.69354          3.950087        2290.2939
-## 19      LT             NA       216.06520          4.039560        1976.1560
-## 20      LV             NA       777.62061          3.960863        2330.3962
-## 21      ME             NA       322.85270          4.160348        1981.2797
-## 22      NL             NA       116.29853          4.764602         703.3457
-## 23      NO             NA       111.39192          4.811518         645.0546
-## 24      PL             NA      1108.07420          4.082524        1969.7677
-## 25      PT             NA       177.66351          3.858704        2225.1588
-## 26      RS             NA       148.02367          3.856686        2225.9616
-## 27      SE             NA       114.23984          4.726829         776.6772
-## 28      SI             NA        88.79006          4.172276        1831.6562
-## 29      SK             NA       221.86408          3.504161        3095.6741
-## 30      UA             NA       310.87411          4.057497        1965.9136
-##    ess_data.ppltrst
-## 1          5.881054
-## 2          5.595985
-## 3          3.948191
-## 4          6.013728
-## 5          4.059854
-## 6          5.189669
-## 7          5.819026
-## 8          5.471800
-## 9          7.010237
-## 10         5.042349
-## 11         5.591449
-## 12         4.742474
-## 13         4.786308
-## 14         4.604344
-## 15         5.594447
-## 16         5.481236
-## 17         6.621140
-## 18         4.897382
-## 19         5.386813
-## 20         4.207668
-## 21         4.807334
-## 22         6.544543
-## 23         6.752431
-## 24         4.726768
-## 25         4.374363
-## 26         4.760077
-## 27         6.330081
-## 28         5.385417
-## 29         4.161581
-## 30         4.337843</code></pre>
+<pre><code>##    Group.1       X ess_data.cntry ess_data.nwspol ess_data.netusoft
+## 1       AT  1177.5             NA        55.56669          4.143585
+## 2       BE  3151.5             NA       110.16876          4.537014
+## 3       BG  5068.0             NA       160.66994          3.804377
+## 4       CH  6879.5             NA        73.68569          4.545520
+## 5       CY  7914.0             NA       116.79124          3.816058
+## 6       DE  9466.5             NA       244.47314          4.482645
+## 7       EE 11323.0             NA       213.71230          4.594741
+## 8       ES 12891.5             NA        95.74729          4.287961
+## 9       FI 14595.0             NA        92.65579          4.592450
+## 10      FR 16262.0             NA       145.26708          4.331451
+## 11      GB 17989.5             NA       264.16211          4.382423
+## 12      GR 20210.0             NA       100.42836          4.120421
+## 13      HR 22370.0             NA       374.12220          3.844530
+## 14      HU 24210.5             NA       331.38952          3.872993
+## 15      IE 26278.0             NA       103.95389          4.148736
+## 16      IL 27739.5             NA       222.62804          4.619205
+## 17      IS 28613.5             NA        86.92755          4.806413
+## 18      IT 30467.0             NA       378.69354          3.950087
+## 19      LT 32582.0             NA       216.06520          4.039560
+## 20      LV 33890.5             NA       777.62061          3.960863
+## 21      ME 35321.0             NA       322.85270          4.160348
+## 22      NL 36973.0             NA       116.29853          4.764602
+## 23      NO 38489.0             NA       111.39192          4.811518
+## 24      PL 39878.5             NA      1108.07420          4.082524
+## 25      PT 41286.0             NA       177.66351          3.858704
+## 26      RS 42754.0             NA       148.02367          3.856686
+## 27      SE 44150.5             NA       114.23984          4.726829
+## 28      SI 45389.5             NA        88.79006          4.172276
+## 29      SK 46734.5             NA       221.86408          3.504161
+## 30      UA 48786.0             NA       310.87411          4.057497
+##    ess_data.netustm ess_data.ppltrst
+## 1         1675.8093         5.881054
+## 2         1048.1851         5.595985
+## 3         2362.7611         3.948191
+## 4         1041.1337         6.013728
+## 5         2262.5620         4.059854
+## 6         1152.9355         5.189669
+## 7          981.4540         5.819026
+## 8         1530.9550         5.471800
+## 9         1039.7735         7.010237
+## 10        1404.0779         5.042349
+## 11        1406.1764         5.591449
+## 12        1802.7602         4.742474
+## 13        2334.1843         4.786308
+## 14        2329.2082         4.604344
+## 15        1697.9926         5.594447
+## 16        1133.9890         5.481236
+## 17         616.9371         6.621140
+## 18        2290.2939         4.897382
+## 19        1976.1560         5.386813
+## 20        2330.3962         4.207668
+## 21        1981.2797         4.807334
+## 22         703.3457         6.544543
+## 23         645.0546         6.752431
+## 24        1969.7677         4.726768
+## 25        2225.1588         4.374363
+## 26        2225.9616         4.760077
+## 27         776.6772         6.330081
+## 28        1831.6562         5.385417
+## 29        3095.6741         4.161581
+## 30        1965.9136         4.337843</code></pre>
+<p>The wrong way to proceed at this stage is to use a t-test to compare,
+say, Austria with Belgium, in terms of time devoted into politics
+related news:</p>
+<pre class="r"><code># THIS IS WRONG!
+austria &lt;- ess_pol[ess_pol$ess_data.cntry == &#39;AT&#39;, ]
+belgium &lt;- ess_pol[ess_pol$ess_data.cntry == &#39;BE&#39;, ]
+t.test(austria$ess_data.nwspol, belgium$ess_nwspol)</code></pre>
+<pre><code>## 
+##  One Sample t-test
+## 
+## data:  austria$ess_data.nwspol
+## t = 10.21, df = 2353, p-value &lt; 2.2e-16
+## alternative hypothesis: true mean is not equal to 0
+## 95 percent confidence interval:
+##  44.89396 66.23943
+## sample estimates:
+## mean of x 
+##  55.56669</code></pre>
+<p>The first error here is that we have not cleaned our data, i.e., we
+have not dropped any dummy values. For example, as one reads <a href="ESS11e04_2%20codebook.html">here</a>, 9999 for example, in
+<code>nwspol</code> means that no answer was provided, while 8888 and
+7777 also have a meaning. So, one first approach might be:</p>
+<pre class="r"><code>austria &lt;- austria[!(austria$ess_data.nwspol %in% c(7777,8888,9999)) , ]
+summary(austria)</code></pre>
+<pre><code>##        X            ess_data.cntry ess_data.nwspol   ess_data.netusoft
+##  Min.   :   1.0   Length   :2352   Min.   :   0.00   Min.   :1.000    
+##  1st Qu.: 588.8   N.unique :   1   1st Qu.:  15.00   1st Qu.:4.000    
+##  Median :1176.5   N.blank  :   0   Median :  30.00   Median :5.000    
+##  Mean   :1176.9   Min.nchar:   2   Mean   :  48.06   Mean   :4.146    
+##  3rd Qu.:1765.2   Max.nchar:   2   3rd Qu.:  60.00   3rd Qu.:5.000    
+##  Max.   :2354.0                    Max.   :1200.00   Max.   :5.000    
+##  ess_data.netustm ess_data.ppltrst
+##  Min.   :   0     Min.   : 0.000  
+##  1st Qu.:  90     1st Qu.: 5.000  
+##  Median : 180     Median : 6.000  
+##  Mean   :1672     Mean   : 5.882  
+##  3rd Qu.: 600     3rd Qu.: 7.000  
+##  Max.   :8888     Max.   :10.000</code></pre>
+<p>Now we observe that there is at least one participant that devotes
+1200 minutes (20 hours) per day on politics news. Since this might be a
+mistyped value, we might impose a seemingly artificial but, more or
+less, sound limit, e.g., by filtering out extreme values, too.</p>
+<p>In our case, we first examine how many such extremities occur:</p>
+<pre class="r"><code>length(austria[austria$ess_data.nwspol &gt; 600, ])</code></pre>
+<pre><code>## [1] 6</code></pre>
+<p>Since there are not that many extreme values, our choice does not
+make any substantial difference, so we might decide to keep those
+observations too. We now proceed to clean Belgium data too:</p>
+<pre class="r"><code>belgium &lt;- belgium[!(belgium$ess_data.nwspol %in% c(7777,8888,9999)) , ]
+summary(belgium)</code></pre>
+<pre><code>##        X          ess_data.cntry ess_data.nwspol   ess_data.netusoft
+##  Min.   :2355   Length   :1590   Min.   :   0.00   Min.   :1.000    
+##  1st Qu.:2752   N.unique :   1   1st Qu.:  30.00   1st Qu.:5.000    
+##  Median :3152   N.blank  :   0   Median :  60.00   Median :5.000    
+##  Mean   :3151   Min.nchar:   2   Mean   :  86.69   Mean   :4.536    
+##  3rd Qu.:3549   Max.nchar:   2   3rd Qu.:  90.00   3rd Qu.:5.000    
+##  Max.   :3948                    Max.   :1196.00   Max.   :5.000    
+##  ess_data.netustm ess_data.ppltrst
+##  Min.   :   0     Min.   : 0.000  
+##  1st Qu.: 120     1st Qu.: 4.000  
+##  Median : 240     Median : 6.000  
+##  Mean   :1045     Mean   : 5.596  
+##  3rd Qu.: 480     3rd Qu.: 7.000  
+##  Max.   :8888     Max.   :88.000</code></pre>
+<p>Let us again count extreme values:</p>
+<pre class="r"><code>length(belgium[belgium$ess_data.nwspol &gt; 600, ])</code></pre>
+<pre><code>## [1] 6</code></pre>
+<p>Again, we keep those as well. In case the extreme values for Belgians
+were far too many, we might have needed to revise our choice for
+Austria, too.</p>
+<p>Now, we feel (are we?) ready to perform a better t-test:</p>
+<pre class="r"><code>t.test(austria$ess_data.nwspol, belgium$ess_data.nwspol)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  austria$ess_data.nwspol and belgium$ess_data.nwspol
+## t = -9.5828, df = 1898.8, p-value &lt; 2.2e-16
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -46.53906 -30.72606
+## sample estimates:
+## mean of x mean of y 
+##  48.05612  86.68868</code></pre>
+<p>So, again, we get the same result with quite a lot of confidence
+(<span class="math inline">\(p&lt;10^{-15}\)</span>), that is, the
+probability of Type I error is:</p>
+<p><span class="math display">\[p&lt;0.000000000000001\]</span> Again,
+are we allowed to use a t-test here? To use a t-test, we assume:</p>
+<ul>
+<li>at first, that both populations are normally distributed, and;</li>
+<li>no knowledge of population SD.</li>
+</ul>
+<p>The second hypothesis if fulfilled but what about the first one?</p>
+<p>The first step might be to plot the actual distribution, i.e., a
+histogram:</p>
+<pre class="r"><code>hist(austria$ess_data.nwspol)</code></pre>
+<p><img role="img" aria-label src="data:image/png;base64,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" alt width="672" /></p>
+<p>This is a bad histogram for many reasons, the most obvious being that
+we have too few bins (most of those being empty). We can make two (at
+least) changes to make things better:</p>
+<ul>
+<li>use more bins;</li>
+<li>exclude (temprorarily) any outliers.</li>
+</ul>
+<pre class="r"><code>austria_hist &lt;- austria[austria$ess_data.nwspol &lt; 600, ]
+hist(austria_hist$ess_data.nwspol, breaks=50)</code></pre>
+<p><img role="img" aria-label src="data:image/png;base64,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" alt width="672" /></p>
+<p>So, we can evidently infer that the distribution of our sample is not
+normal so, we should not have used the t-test in our case. We will
+explore in the future more adequate tests for populations of unknown
+distribution.</p>
+<blockquote>
+<p>As a side note, a better histogram would have included all outliers
+in a separate unevenly sized bin:</p>
+</blockquote>
+<pre class="r"><code>hist(austria$ess_data.nwspol, breaks=c(seq(0, 200, 10), 1200))</code></pre>
+<p><img role="img" aria-label src="data:image/png;base64,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yEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByEJnRECByOoZmby7g2E0E1AgsnpGvj4fPDm+g5E0EFAgssaATj2N0FABBSJryMjpi6ygg+HT95sfzioBBSJrzMjk6FHR0IM/Nz2eFQIKRNaWkXlD7x982uh4VggoENk1GflytJ83dO/tXTVUQIHIrs/IrKHDO3obKqBAZNdm5PTNYGb4y6YGVCagQGTtGTn9abYDf/bmJgWdnH8cj8fvzlPewwooEFlLRmbvPWf77pPXg8HDlKWfLd7CJp1aKqBAZE0ZmWdveSLo5/3Bvd87L/vyxWDVXse3sQIKRNZ2JdJ01331tu4Bvcg/gHo8KuRnRQ1fdRucgAKBNQe0+rH79LYHXQ9i5sspV/h0GtRuGRZQILKmgDZcw3nefckntVxmSX3WZRECCkTWW0ayD56qO+wXg25vZAUUiKxhPtCP43elyn08SjuLvumwaddDqQIKRNZ4DLRUuaSPj9p+UECBXdJbQKe78LWT7+3CA7tkJSN/ZOcb/WV/MPxhNPei6yfnC4e1WnY+H19AgchWMvJ5f9Ag6RqkYmEPyp/nX77uekWogAKRrWbksKGfe2lvQPPzmKbFHP08zvxWnEnf6SwmAQVCW83IJEvddBe+iF4u4QzQuQ/VN7TDlx0HJ6BAYN/6EOlGJkflhHafVVRAgci+eR7oDU3Oxkej0ehgfJywTAEFIgudEQEFIgudEQEFIitnpDj6OZvObum2jogmDE5AgcAEFCDRSkB/evzk9+x/Vz0RUIAGoTMioEBkoTMioEBkvWWkdig14YCqgAKRXZeR7FLMhq/3WI+AAruuMSOnL7LOnRQXYHb8KuKF2pcaCyiwW5oyUnwd3Hxuu+SzmLLpP7vNvlQloEBkDRn5XHz9cJ7RG0Ww6Xvlug1OQIHAGjJykk8lP5s+/iJ5QuWrm0/sJKBA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" alt width="672" /></p>
+</div>
 </div>
 
 
