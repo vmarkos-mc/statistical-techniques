@@ -2,7 +2,9 @@
 title: "in-class"
 author: "V. Markos"
 date: "2026-11-10"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 # Some R Datasets to Play With
@@ -99,7 +101,45 @@ Some notes on the above results:
 
 ## Evaluating a Linear Regression Model
 
-We have raw inspection as a first intuitive way to verify fitness of a model, but we should also use common testing measures ($p$ values, adjusted $R^2$) but also we should use some auxilliary plots that help us make sense of how good our model is.
+We have raw inspection as a first intuitive way to verify fitness of a model, but we should also use common testing measures ($p$ values, adjusted $R^2$) but also we should use some auxiliary plots that help us make sense of how good our model is.
+
+The first one is the Fitted vs Residuals plot:
+
+```{r}
+plot(lrm, which = 1)
+```
+Ideally, we want this plot to look entirely random with the red line being close to the $residual=0$ line (dotted, in the middle of the plot). The situation above is good enough for our case and $n=32$ observations.
+
+Next, we also have the so-called Q-Q plots:
+
+```{r}
+plot(lrm, which = 2)
+```
+
+This plots shows where the residuals (after standardisation) stand, compared to the
+theoretical expectation under the assumption that they are normally distributed. So, the closer the points to the diagonal (in general), the more probable it is that residuals are indeed normally distributed, as we have assumed (otherwise the model makes no sense).
+
+> In linear regression, we do assume that residuals are **normally distributed** around **zero** ($\mu=0$). So, since we do not have access to this population prior to actually computing the model, we need to verify this assumption. If it fails, this means that the entire model is garbage.
+
+
+Next, we have a scale-location plot:
+
+```{r}
+plot(lrm, which = 3)
+```
+
+A scale-location plot informs us about whether (or not) there are some places (locations) in our dataset where residuals are much larger or smaller compared to other areas (scale). Ideally, this plot should look like randomly scattered points and the fitting line should, more or less, be a straight line (or close to that).
+
+In this, as well as the previous plots, we mostly focus on $y$ axis distribution, since what happens on the $x$ axis depends mostly on the data at hand and our model's prediction.
+
+Next, we have Residual vs Leverage plots:
+
+```{r}
+plot(lrm, which = 5)
+```
+
+This plot corresponds to how much data points that affect the model more (have more leverage) do also contribute to errors. In this case we see that most points are around a $0.03-0.04$ of leverage, which makes sense (they affect at around $100/32=3.125\%$ each) besides a few that have a stronger leverage on the model but, 
+in turn, contribute less to residuals (have residual values closer to zero). So, excluding the three outliers we have spotted, these results are more or less, good enough.
 
 # Notes on Linear Regression
 
@@ -127,3 +167,27 @@ Since $(x_i,y_i)$ are the observations in our sample, those are know, so in prac
 
 $$SSE=SSE(\beta_0,\beta_1).$$
 Of this bivariate function we seek the minimum, which is given at the point shown in the slides.
+
+## Linear Regression Party Tricks
+
+Above, we found a nice regression relationship relating vehicle weight with miles per gallon of fuel consumed:
+
+$$\frac{miles}{gallon}=37.2851-5.3445wt.$$
+
+So, if we want to measure consumption, i.e., $c=\frac{gallons}{mile}$, we can just invert the above formula, i.e.:
+
+$$c=\frac{gallons}{mile}=\frac{1}{37.2851-5.3445wt}.$$
+
+Observe how this is a clearly non-linear relationship, stemming just from a linear one, so we can re-frame non-linear problems into linear ones, study the linear variant and then bring our newly acquired knowledge back to the non-linear problem. In this particular case, this curve looks like:
+
+```{r}
+consumption <- function(wt) {1 / (37.2851 - 5.3445 * wt)}
+curve(consumption, xlim = c(0, 6))
+```
+
+```{r}
+wt <- mtcars$wt
+gpm <- 1 / mtcars$mpg
+plot(wt, gpm)
+curve(consumption, xlim = c(0, 6), add = TRUE, col = 'red', lwd = 2)
+```
