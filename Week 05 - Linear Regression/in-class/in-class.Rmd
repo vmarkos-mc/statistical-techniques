@@ -42,6 +42,8 @@ str(iris)
 
 # Playing with `mtcars`
 
+## Creating a Simple Model
+
 *For what each columns is, see [https://www.rdocumentation.org/packages/datasets/versions/3.6.2/topics/mtcars](https://www.rdocumentation.org/packages/datasets/versions/3.6.2/topics/mtcars).*
 
 First, we load a summary of the data:
@@ -66,7 +68,42 @@ From this plot we might formulate a naive hypothesis:
 
 > Heavier vehicles tend to have a less `mpg` value, i.e., tend to consume more fuel per mile.
 
+To verify this assumption, we compute a linear regression model for those two variables:
+
+```{r}
+lrm <- lm(mpg ~ wt, data = mtcars)
+summary(lrm)
+```
+
+By the values shown above, the resulting model is:
+
+$$mpg=37.2851-5.3445 wt.$$
+
+An intuitive explanation of the above formula is as follows: For every additional 1000 lbs of weight for a particular car, we get a change in miles per gallon of -5.3445 miles / (US) gallon. Also, for the (fictional) case of cars of 0 weight we
+should expect a mean consumption of 37.2851 miles / (US) gallon.
+
+The model looks like the following:
+
+```{r}
+plot(mtcars$wt, mtcars$mpg)
+abline(lrm, col = 'red', lwd = 2)
+```
+
+Some notes on the above results:
+
+* Residuals is an alternative name for errors, so $\varepsilon_i$.
+* Intercept is $\beta_0$.
+* `wt` is $\beta_1$.
+* The fact that both $p$ values are too small is actually hinting towards rejecting the null hypothesis that $\beta_1=0$. This, means that there is, at least, some sort of relationship between the two variables. However, we should be too eager to infer that this relationship is actually linear (the one predicted).
+* $R^2$ and adjusted $R^2$ (which is a more faithful metric) corresponds to the amount of variation in our data explained by our model. So, in this case, this means that weight explains about 74.76% of the variation observed in `mpg` in our sample.
+
+## Evaluating a Linear Regression Model
+
+We have raw inspection as a first intuitive way to verify fitness of a model, but we should also use common testing measures ($p$ values, adjusted $R^2$) but also we should use some auxilliary plots that help us make sense of how good our model is.
+
 # Notes on Linear Regression
+
+## Why we do not use SE?
 
 If we use the formula:
 
@@ -75,3 +112,18 @@ $$SE=\sum_{i=1}^n\varepsilon_i$$
 for quantifying errors, we might end up with a situation like the following:
 
 ![An erroneous way to quantify error in Linear Regression.](img/reg_se.png)
+
+On the contrary, this is not the case with $SSE$.
+
+## How optimisation works?
+
+We consider the quantity:
+
+$$SSE=\sum_{i=1}^n\varepsilon_i^2=\sum_{i=1}^n(\hat{y}_i-y_i)^2.$$
+If we substitute $\hat{y}_i=\beta_0+\beta_1x_i$ we get:
+
+$$SSE=\sum_{i=1}^n(\beta_0+\beta_1x_i-y_i)^2.$$
+Since $(x_i,y_i)$ are the observations in our sample, those are know, so in pracice $SSE$ is just a function of $\beta_0$ and $\beta_1$, i.e.:
+
+$$SSE=SSE(\beta_0,\beta_1).$$
+Of this bivariate function we seek the minimum, which is given at the point shown in the slides.
