@@ -1,0 +1,43 @@
+---
+title: "Multilinear Regression"
+author: "V. Markos"
+date: "2026-11-17"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+---
+
+# Our First Multilinear Regression Model!
+
+First, load our data and create a model of mpg against weight, HP and drat:
+
+```{r}
+mlm <- lm(formula = mpg ~ wt + hp + drat, data = mtcars)
+summary(mlm)
+```
+
+So, the computed model is:
+
+$$mpg=29.394934-3.227954wt-0.032230hp+1.615049drat$$
+The interpretation of the above formula is as follows:
+
+* For 1000 lbs of additional weight, we run 3.227954 miles / gallon **less** *ceteris paribus* (c.p.).
+* For 1 H of additional HP, we run 0.032230 miles / gallon **less** (c.p.).
+* For a change of 1 in rear axle ratio, we run 1.615049 miles / gallon **more** (c.p.).
+* For the (fictional) case of a car with 0 weight, 0 HP and 0 rear axle ratio, we run 29.394934 miles / gallon.
+
+
+> In our context *ceteris paribus* means "all other parameters being the same".
+
+To begin with, observe that $R^2$ and adjusted $R^2$ are good enough, accounting for more than $80\%$ of the 
+total variance in our data. But, as you might well see, our $p$ values are not as strong as last time. Namely:
+
+* For weight, we have a $p$ value of $0.000364$ which is good enough.
+* For HP, we have a $p$ value of $0.001178$ which, again, is below common confidence thresholds of $0.05$ or $0.01$.
+* For rear axle ratio we see that there is a really weak $p$ value of $0.198755$, which means that there is a $20\%$ chance that we make
+a type I error, i.e., we erroneously reject the null hypothesis that there is no effect of drat of mpg (or the other way).
+
+Also, besides the fact that `drat` appears to not be correlated in this model, we also observe a weak coefficient between `mpg` and `hp`, namely, $-0.032230$.
+
+So, what is going wrong with this model?
