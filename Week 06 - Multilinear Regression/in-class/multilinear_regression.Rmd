@@ -41,3 +41,152 @@ a type I error, i.e., we erroneously reject the null hypothesis that there is no
 Also, besides the fact that `drat` appears to not be correlated in this model, we also observe a weak coefficient between `mpg` and `hp`, namely, $-0.032230$.
 
 So, what is going wrong with this model?
+
+## Testing for Correlations
+
+We should first test whether there are any correlations in our independent variables:
+
+```{r}
+ivars <- mtcars[, c('wt', 'hp', 'drat')]
+ivars_cor <- cor(ivars) # This computes Spearman's correlation
+print(ivars_cor)
+```
+
+We should also compute the $p$ values for each correlation:
+
+```{r}
+# install.packages('Hmisc')
+library(Hmisc)
+ivars_cor_p <- rcorr(as.matrix(ivars))
+print(ivars_cor_p$P) # Get just the p-values
+```
+
+So, as we see here, all independent variables are somehow correlated with strong enough $p$ values,
+which means that the multicollinearity assumption might not hold. In particular, `drat`
+appears strongly correlated with `wt`, which might imply that we should exclude one of the two variables. Also, there is a 
+notable correlation between `hp` and `wt`, which also explains why we see such a small 
+coefficient for `hp` in the above model.
+
+We can also visualise the above using a correlogram:
+
+```{r}
+# install.packages('corrplot')
+library(corrplot)
+corrplot(ivars_cor, method = 'circle')
+```
+
+## Computing a New Model
+
+In theory, larger values for `drat` should result to higher fuel consumption, i.e., lower `mpg`.
+Inversely, smaller values for `drat` should result to higher `mpg`. However, in our previous
+model the case was inverted since the regression coefficient was `1.615049` which is positive, 
+that is, `drat` is found to positively affect `mpg`. One way to verify this is to also 
+plot a correlogram including `mpg`, so:
+
+```{r}
+corrplot(cor(mtcars[, c('mpg', 'wt', 'hp', 'drat')]), method = 'circle')
+```
+We are now going to create a compound index taking into account `drat` and `hp` together by multiplying those, i.e.:
+
+```{r}
+cor_mlm <- lm(formula = mpg ~ wt + hp + drat + hp * drat, data = mtcars)
+summary(cor_mlm)
+```
+
+Above we added an interaction term, as we say, where we add, alongside `drat` and `hp`, also `hp*drat`, 
+i.e., their product. This is typically done in cases where we are interested into 
+quantifying any interaction between two or more of our independent variables. However,
+we should do so carefully, because adding such terms typically lowers the significance 
+of other variables' coefficients, as we saw above. If that happens, this means that doing
+so actually introduced more multicollinearity, i.e., made our model worse. So, this interaction,
+should, in principle, be ignored.
+
+Maybe, a different approach, might be to just drop `drat`, to begin with, and see with what sort of model we end up with:
+
+```{r}
+no_drat_mlm <- lm(formula = mpg ~ wt + hp, data = mtcars)
+summary(no_drat_mlm)
+```
+
+Comparing this model with our first one, we see virtually no change, besides stronger $p$ 
+values, which means that, in general, we should drop `drat` from our analysis.
+
+Now, besides $p$ values and $R^2$, we should also look at Normal Q-Q plots and the 
+rest of the useful plots we saw last time:
+
+```{r}
+plot(no_drat_mlm)
+```
+
+Starting with residuals vs fitted, we see a pretty much good picture, where residuals are 
+nicely distributed. Also, the Q-Q plot seems to verify the normal residual distribution
+assumption. Also, we see that the scale-location plot is quite good, looking like
+randomly scattered points. The only plot that is a bit less good than the simple model
+we crafted last time is the residuals vs leverage plot, where we see that some observations
+have more leverage compared to our previous model and, also, residuals are a bit negatively 
+distributed for lower values of leverage.
+
+## Trying A Different Approach
+
+Another approach to handle correlations between variables is to create a new variable based 
+on highly correlated ones and create a simpler model. In our case, out of `wt`, `hp` and `drat`, 
+we saw that `drat` is maybe irrelevant to `mpg` on the presence of the others, so we dropped it.
+Also, we saw that `wt` and `hp` are quite positively correlated, so, we might create a 
+new index by using both `wt` and `hp` and then use that to create a simple regression model. One simple
+approach is to center our values for `wt` and `hp` by subtracting their mean values and then add them, i.e.:
+
+```{r}
+mwt <- mean(mtcars$wt)
+mhp <- mean(mtcars$hp)
+wt_hp_index <- (mtcars$wt - mwt + mtcars$hp - mhp)/2
+index_data <- data.frame(mtcars$mpg, wt_hp_index)
+colnames(index_data) <- c('mpg', 'wt_hp_index')
+wt_hp_mlm <- lm(mpg ~ wt_hp_index, data = index_data)
+summary(wt_hp_mlm)
+```
+
+Here, we get a solid $p$ value, but our model explains much less of the variance.
+To see that, we can also plot the corresponding scatterplot:
+
+```{r}
+plot(index_data$wt_hp_index, index_data$mpg)
+abline(wt_hp_mlm, col = 'red')
+```
+
+```{r}
+plot(wt_hp_mlm)
+```
+
+So, for this model, we see that all metrics discussed above are more or less worse off than in the first and third models. Evidently, we should keep either the simple `mpg ~ wt` model or the multilinear `mpg ~ wt + hp` models, which do explain a lot of variance with most metrics being quite good.
+
+# Working with Real Data
+
+Let us now briefly try to create some models on real data, in particular, the ESS-pol dataset
+we had extracted last time.
+
+
+```{r}
+ess_pol <- read.csv('ess_pol.csv', header = TRUE, sep = ',')
+head(ess_pol)
+```
+
+To begin with, we should clean all dummy values, i.e., 7777, 8888, 9999 and so on:
+
+
+```{r}
+# We essentially look through each row, compute the sum of those that contain 9999 and keep only those which
+# sum up to 0, i.e., those that do not contain 9999
+for (v in c(5555, 6666, 7777, 8888, 9999)) {
+  ess_pol <- ess_pol[rowSums(ess_pol == v, na.rm = TRUE) == 0, ]
+}
+```
+
+Next, we create a simple MLM:
+
+```{r}
+ess_lm <- lm(formula = ess_data.ppltrst ~ ess_data.nwspol + ess_data.netusoft + ess_data.netustm, data = ess_pol)
+summary(ess_lm)
+plot(ess_lm)
+```
+This is evidently a bad model, mostly because we have not taken into account country plus some further data 
+cleaning is required. So, you can have fun yourselves if you want to!
