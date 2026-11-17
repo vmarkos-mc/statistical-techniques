@@ -1,0 +1,27 @@
+---
+title: "Linear Regression"
+author: "V. Markos"
+date: "2026-11-10"
+output: html_document
+---
+
+```{r}
+head(mtcars)
+```
+```{r}
+pairs(mpg ~ ., data = mtcars)
+```
+
+```{r}
+plot(mtcars$wt, mtcars$mpg, xlab = 'Miles / gallon', ylab = 'Weight (lbs)', title(main='mtcars mpg vs weight'))
+```
+
+```{r}
+lg_model <- lm(wt~mpg, data=mtcars)
+summary(lg_model)
+```
+
+```{r}
+plot(mtcars$wt, mtcars$mpg, xlab = 'Miles / gallon', ylab = 'Weight (lbs)', title(main='mtcars mpg vs weight'))
+abline(lg_model, col = 'red', lwd = 2)
+```

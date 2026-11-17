@@ -1,0 +1,214 @@
+---
+title: "in-class"
+author: "V. Markos"
+date: "2026-11-10"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+# Some R Datasets to Play With
+
+R comes with a few dataset delivered with the base installation.
+
+```{r}
+summary(mtcars)
+```
+
+More on `mtcars`:
+
+```{r}
+head(mtcars)
+```
+
+```{r}
+str(mtcars)
+```
+
+Another interesting dataset is `iris`:
+
+```{r}
+summary(iris)
+```
+
+```{r}
+head(iris)
+```
+
+```{r}
+str(iris)
+```
+
+> **Disclaimer** These datasets are useful as toy datasets for testing simple models or for educational purposes! They should not be used for other "serious" purposes!
+
+
+# Playing with `mtcars`
+
+## Creating a Simple Model
+
+*For what each columns is, see [https://www.rdocumentation.org/packages/datasets/versions/3.6.2/topics/mtcars](https://www.rdocumentation.org/packages/datasets/versions/3.6.2/topics/mtcars).*
+
+First, we load a summary of the data:
+
+```{r}
+summary(mtcars)
+```
+In order to visually look for variables that might affect, e.g., `mpg`, we can use the following:
+
+```{r}
+# `pairs` plots pairs of variables we ask for in scatter plots.
+pairs(mpg ~ ., data = mtcars)
+```
+
+Since we suspect a negative linear dependence between `mpg` and `wt` (fuel consumption and vehicle weight), we plot this one scatterplot separately:
+
+```{r}
+plot(mtcars$wt, mtcars$mpg)
+```
+
+From this plot we might formulate a naive hypothesis:
+
+> Heavier vehicles tend to have a less `mpg` value, i.e., tend to consume more fuel per mile.
+
+To verify this assumption, we compute a linear regression model for those two variables:
+
+```{r}
+lrm <- lm(mpg ~ wt, data = mtcars)
+summary(lrm)
+```
+
+By the values shown above, the resulting model is:
+
+$$mpg=37.2851-5.3445 wt.$$
+
+An intuitive explanation of the above formula is as follows: For every additional 1000 lbs of weight for a particular car, we get a change in miles per gallon of -5.3445 miles / (US) gallon. Also, for the (fictional) case of cars of 0 weight we
+should expect a mean consumption of 37.2851 miles / (US) gallon.
+
+The model looks like the following:
+
+```{r}
+plot(mtcars$wt, mtcars$mpg)
+abline(lrm, col = 'red', lwd = 2)
+```
+
+Some notes on the above results:
+
+* Residuals is an alternative name for errors, so $\varepsilon_i$.
+* Intercept is $\beta_0$.
+* `wt` is $\beta_1$.
+* The fact that both $p$ values are too small is actually hinting towards rejecting the null hypothesis that $\beta_1=0$. This, means that there is, at least, some sort of relationship between the two variables. However, we should be too eager to infer that this relationship is actually linear (the one predicted).
+* $R^2$ and adjusted $R^2$ (which is a more faithful metric) corresponds to the amount of variation in our data explained by our model. So, in this case, this means that weight explains about 74.76% of the variation observed in `mpg` in our sample.
+
+## Evaluating a Linear Regression Model
+
+We have raw inspection as a first intuitive way to verify fitness of a model, but we should also use common testing measures ($p$ values, adjusted $R^2$) but also we should use some auxiliary plots that help us make sense of how good our model is.
+
+The first one is the Fitted vs Residuals plot:
+
+```{r}
+plot(lrm, which = 1)
+```
+Ideally, we want this plot to look entirely random with the red line being close to the $residual=0$ line (dotted, in the middle of the plot). The situation above is good enough for our case and $n=32$ observations.
+
+Next, we also have the so-called Q-Q plots:
+
+```{r}
+plot(lrm, which = 2)
+```
+
+This plots shows where the residuals (after standardisation) stand, compared to the
+theoretical expectation under the assumption that they are normally distributed. So, the closer the points to the diagonal (in general), the more probable it is that residuals are indeed normally distributed, as we have assumed (otherwise the model makes no sense).
+
+> In linear regression, we do assume that residuals are **normally distributed** around **zero** ($\mu=0$). So, since we do not have access to this population prior to actually computing the model, we need to verify this assumption. If it fails, this means that the entire model is garbage.
+
+
+Next, we have a scale-location plot:
+
+```{r}
+plot(lrm, which = 3)
+```
+
+A scale-location plot informs us about whether (or not) there are some places (locations) in our dataset where residuals are much larger or smaller compared to other areas (scale). Ideally, this plot should look like randomly scattered points and the fitting line should, more or less, be a straight line (or close to that).
+
+In this, as well as the previous plots, we mostly focus on $y$ axis distribution, since what happens on the $x$ axis depends mostly on the data at hand and our model's prediction.
+
+Next, we have Residual vs Leverage plots:
+
+```{r}
+plot(lrm, which = 5)
+```
+
+This plot corresponds to how much data points that affect the model more (have more leverage) do also contribute to errors. In this case we see that most points are around a $0.03-0.04$ of leverage, which makes sense (they affect at around $100/32=3.125\%$ each) besides a few that have a stronger leverage on the model but, 
+in turn, contribute less to residuals (have residual values closer to zero). So, excluding the three outliers we have spotted, these results are more or less, good enough.
+
+# Notes on Linear Regression
+
+## Why we do not use SE?
+
+If we use the formula:
+
+$$SE=\sum_{i=1}^n\varepsilon_i$$
+
+for quantifying errors, we might end up with a situation like the following:
+
+![An erroneous way to quantify error in Linear Regression.](img/reg_se.png)
+
+On the contrary, this is not the case with $SSE$.
+
+## How optimisation works?
+
+We consider the quantity:
+
+$$SSE=\sum_{i=1}^n\varepsilon_i^2=\sum_{i=1}^n(\hat{y}_i-y_i)^2.$$
+If we substitute $\hat{y}_i=\beta_0+\beta_1x_i$ we get:
+
+$$SSE=\sum_{i=1}^n(\beta_0+\beta_1x_i-y_i)^2.$$
+Since $(x_i,y_i)$ are the observations in our sample, those are know, so in pracice $SSE$ is just a function of $\beta_0$ and $\beta_1$, i.e.:
+
+$$SSE=SSE(\beta_0,\beta_1).$$
+Of this bivariate function we seek the minimum, which is given at the point shown in the slides.
+
+## Linear Regression Party Tricks
+
+Above, we found a nice regression relationship relating vehicle weight with miles per gallon of fuel consumed:
+
+$$\frac{miles}{gallon}=37.2851-5.3445wt.$$
+
+So, if we want to measure consumption, i.e., $c=\frac{gallons}{mile}$, we can just invert the above formula, i.e.:
+
+$$c=\frac{gallons}{mile}=\frac{1}{37.2851-5.3445wt}.$$
+
+Observe how this is a clearly non-linear relationship, stemming just from a linear one, so we can re-frame non-linear problems into linear ones, study the linear variant and then bring our newly acquired knowledge back to the non-linear problem. In this particular case, this curve looks like:
+
+```{r}
+consumption <- function(wt) {1 / (37.2851 - 5.3445 * wt)}
+curve(consumption, xlim = c(0, 6))
+```
+
+```{r}
+wt <- mtcars$wt
+gpm <- 1 / mtcars$mpg
+plot(wt, gpm)
+curve(consumption, xlim = c(0, 6), add = TRUE, col = 'red', lwd = 2)
+```
+
+# Multilinear Regression
+
+```{r}
+# Revisiting the model to add a new parameter.
+plot(mtcars$drat, mtcars$mpg)
+```
+
+```{r}
+plot(mtcars$hp, mtcars$mpg)
+```
+
+```{r}
+# Multiple regression model
+mlm <- lm(formula = mpg ~ wt + hp + drat, data = mtcars)
+summary(mlm)
+```
+
+```{r}
+plot(mlm)
+```

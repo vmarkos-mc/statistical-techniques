@@ -3,8 +3,8 @@ title: "in-class"
 author: "V. Markos"
 date: "2026-11-10"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 # Some R Datasets to Play With
