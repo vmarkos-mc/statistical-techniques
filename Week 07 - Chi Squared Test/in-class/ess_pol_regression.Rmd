@@ -1,0 +1,111 @@
+---
+title: "ESS Politics Regression"
+author: "V. Markos"
+date: "2026-11-24"
+output: html_document
+---
+
+# Loading and Cleaning
+
+First we load our data to remember what they are about:
+
+```{r}
+ess_pol <- read.csv('ess_pol.csv', sep = ',')
+head(ess_pol)
+str(ess_pol)
+```
+
+Let us cleanup and save our data
+
+```{r}
+# Clean four/two-digit key-codes
+for (v in c(77, 88, 99, 6666, 7777, 8888, 9999)) {
+  ess_pol <- ess_pol[rowSums(ess_pol == v, na.rm = TRUE) == 0, ]
+}
+summary(ess_pol)
+```
+
+Also, since countries form a categorical variables, we should treat it as a factor:
+
+```{r}
+ess_pol$ess_data.cntry <- as.factor(ess_pol$ess_data.cntry)
+str(ess_pol)
+```
+
+Since we are using this a lot, we should also save the cleansed values:
+
+```{r}
+write.csv(ess_pol, 'ess_pol_clean.csv', sep = ',')
+```
+
+# A First Theory
+
+One idea, given the variables we have chosen is to look for any effects of the time
+people devote on politics news and the time they spend on the internet on a daily basis on their level of other people trust. Also, we should, most probably, take also countries into account or focus, first to a single country.
+
+First, let us quickly look for potential correlations between ppltrst and the rest of our variables:
+
+
+```{r}
+pairs(ess_data.ppltrst ~ ., data = ess_pol)
+```
+Too much noise! So, first, we might want to study a particular country and then repeat maybe for all.
+
+```{r}
+ess_pol_den <- ess_pol[ess_pol$ess_data.cntry == 'DK', ]
+str(ess_pol_den)
+```
+Okay, so, accidentally, we see that all Danish responses have been removed from our data. To test whether this is a general thing or just affects danish submissions
+we can create a barplot of our country counts:
+
+```{r}
+cntry_tab <- table(ess_pol$ess_data.cntry)
+plot(cntry_tab, las = 2)
+```
+
+It seems that danish participats were maybe too few and all of them have been excluded. To verify this, we just reload our data on a separate dataframe and plot the same barplot for them:
+
+```{r}
+or_data <- read.csv('ess_pol.csv', sep = ',')
+or_data$ess_data.cntry <- as.factor(or_data$ess_data.cntry)
+plot(table(or_data$ess_data.cntry), las=2)
+```
+
+So, thankfully enough, we have not eliminated danish participants, it is just that they were never there!
+
+So, let us pick Italy, instead:
+
+```{r}
+ess_pol_it <- ess_pol[ess_pol$ess_data.cntry == 'IT', ]
+summary(ess_pol_it)
+```
+
+So, now, let us create those correlation plots on the above data:
+
+```{r}
+pairs(ess_pol_it$ess_data.ppltrst ~ ess_pol_it$ess_data.netustm + ess_pol_it$ess_data.nwspol, data = ess_pol_it)
+```
+
+So, let us also compute the corresponding correlations:
+
+```{r}
+cor(ess_pol_it[, c('ess_data.ppltrst', 'ess_data.netustm', 'ess_data.nwspol')])
+```
+
+All correlations in this case, appear to bee too weak to be considered, so, we drop the idea of investigating further by using linear regression.
+
+# What If...?
+
+There are too many extreme values in the above, e.g., TV attendance of more than 1000 minutes per day, so we might also consider excluding extreme values:
+
+```{r}
+ess_pol_it <- ess_pol_it[ess_pol_it$ess_data.netustm <= 600, ]
+ess_pol_it <- ess_pol_it[ess_pol_it$ess_data.nwspol <= 600, ]
+```
+
+Now, let us compute correlations again:
+
+```{r}
+cor(ess_pol_it[, c('ess_data.ppltrst', 'ess_data.netustm', 'ess_data.nwspol')])
+```
+Since correlations found are still too weak, we just drop this hypothesis.

@@ -1,0 +1,43 @@
+---
+title: "ESS Pol ChiSq"
+author: "V. Markos"
+date: "2026-11-24"
+output: html_document
+---
+
+# Loading our Data
+
+```{r}
+ess_pol <- read.csv('ess_pol_clean.csv', sep = ',')
+summary(ess_pol)
+```
+
+We are interested into checking whether the distribution of netusoft is different for people that trust others more or not. To do that, we have to first check for the distribution of ppltrst (people trust):
+
+```{r}
+barplot(table(ess_pol$ess_data.ppltrst))
+```
+
+Then, we also plot the corresponding barplot for netusoft:
+
+```{r}
+barplot(table(ess_pol$ess_data.netusoft))
+```
+
+Since we only have two values for netusoft, we can just extract two separate rows:
+
+```{r}
+every_day_use <- ess_pol[ess_pol$ess_data.netusoft == 5, ]
+most_days_use <- ess_pol[ess_pol$ess_data.netusoft == 4, ]
+ppltrst_evry <- every_day_use$ess_data.ppltrst
+ppltrst_most <- most_days_use$ess_data.ppltrst
+barplot(table(ppltrst_evry) / length(ppltrst_evry), col = 'red')
+barplot(table(ppltrst_most) / length(ppltrst_most), add = TRUE, col = adjustcolor('blue', alpha.f = 0.5))
+```
+
+So, we next proceed to create the contingency table for our data:
+
+```{r}
+cont_table <- matrix(c(ppltrst_evry, ppltrst_most), byrow = TRUE, nrow = 2)
+chisq.test(cont_table)
+```

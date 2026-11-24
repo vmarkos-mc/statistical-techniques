@@ -1,0 +1,118 @@
+---
+title: "in-class"
+author: "V. Markos"
+date: "2026-11-24"
+output: html_document
+---
+
+# Chi-Sq for Cancer-Smoking Correlation
+
+First, we create our table:
+
+```{r}
+# Observe that to make rows cols we just set `byrow=FALSE`
+obs <- matrix(c(94, 26, 506, 374), byrow = FALSE, ncol=2, nrow=2)
+obs
+```
+
+Then, we can run a chi-sq test:
+
+```{r}
+chisq.test(obs)
+```
+
+We can also do so by plain arithmetic:
+
+```{r}
+expected <- matrix(c(72, 48, 528, 352), byrow = FALSE, ncol=2, nrow=2)
+expected
+```
+
+Next, we subtract the values and square them:
+
+```{r}
+chi_sq_stat <- sum((obs - expected)^2 / expected)
+chi_sq_stat
+```
+
+So, we should now find the corresponding chi-sq value to compare against:
+
+```{r}
+df <- (2-1) * (2-1)
+# Take the right-most chisq tail
+chi_sq_crit = qchisq(0.05, df, lower.tail = FALSE)
+chi_sq_crit
+```
+
+Since our value is larger than th critical value, we reject the null hypothesis at 0.05 significance. The corresponding p-value from our estimation is:
+
+```{r}
+dchisq(chi_sq_stat, df)
+```
+
+# The Accidents Example
+
+First create a vector of the data:
+
+```{r}
+obs <- c(57, 42, 48, 53, 41, 59)
+obs
+sum(obs)
+```
+
+Then, compute the expected distribution:
+
+```{r}
+expected <- rep(sum(obs) / 6, 6)
+```
+
+Now, we compute the chisq statistic:
+
+```{r}
+chi_sq_stat <- sum( (obs - expected)^2 / expected )
+chi_sq_stat
+```
+
+The critical value will be:
+
+```{r}
+df <- 6-1
+chi_sq_crit <- qchisq(0.05, df, lower.tail = FALSE)
+chi_sq_crit
+```
+
+Since our chisq stat does not exceed the critical value, we do not reject the null hypothesis.
+
+# Is Lee getting better with practice?
+
+We first compute our data:
+
+```{r}
+daily <- round(c(0.28, 0.41, 0.22, 0.05, 0.02) * 524)
+practice <- round(c(0.35, 0.30, 0.24, 0.07, 0.02) * 524)
+daily
+practice
+```
+
+Next, we compute the chisq stat and compare with the critical value:
+
+```{r}
+chi_sq_stat <- sum( (practice - daily)^2 / daily )
+chi_sq_stat
+chi_sq_crit <- qchisq(0.05, 4, lower.tail = FALSE)
+chi_sq_crit
+```
+
+Evidently, there is a statistically significant difference at 5% level of significance, with a p-value of:
+
+```{r}
+dchisq(chi_sq_stat, 4)
+```
+
+We can also verify using the built-in:
+
+```{r}
+lee_data <- matrix(c(daily, practice), byrow = TRUE, ncol = 5, nrow = 2)
+lee_data
+chisq.test(lee_data)
+```
